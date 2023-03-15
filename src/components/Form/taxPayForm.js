@@ -34,10 +34,10 @@ const NewPaymentForm = ({ res }) => {
     reValidateMode: "onChange",
   });
   const [channel, setChannel] = useState([
-    { key: "eTransact", value: "eTransact" },
-    { key: "WebPay", value: "Interswitch" },
-    { key: "Remita", value: "Remita" },
-    { key: "Bank Branch", value: "Bank Branch" },
+    // { key: "eTransact", value: "eTransact" },
+    // { key: "WebPay", value: "Interswitch" },
+    // { key: "Remita", value: "Remita" },
+    // { key: "Bank Branch", value: "Bank Branch" },
     { key: "Monnify", value: "Monnify" },
   ]);
 
