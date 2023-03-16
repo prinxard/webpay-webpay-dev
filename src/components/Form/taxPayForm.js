@@ -215,12 +215,12 @@ const NewPaymentForm = ({ res }) => {
       // if (result.data.status === 200) {
       // const { assessmentId, taxId, channel } = result.data.body;
 
-      // if (data.channel === "Bank Branch") {
-      //   await fetchBankPrint(assessmentId, taxId);
-      // } else {
-      //   console.log("True");
-      //   payWithMonnify()
-      // }
+      if (data.channel === "Bank Branch") {
+        await fetchBankPrint(assessmentId, taxId);
+      } else {
+  
+        payWithMonnify()
+      }
       // else if (channel.toUpperCase() === "REMITA") {
       //   router.push(
       //     `${url.PAY_URL}remita/initialize.php?assessmentId=${assessmentId}&taxId=${taxId}`
