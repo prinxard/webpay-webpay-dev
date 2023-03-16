@@ -200,7 +200,7 @@ const NewPaymentForm = ({ res }) => {
       setDisabled(true);
       // let result = await axios.post(`${url.BASE_URL}web/new-payment`, formData);
 
-      let result = axios.get(`https://irs.kg.gov.ng/etaxwebpay/api/recordpayment.php?${queryParams}`);
+      let result = axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/recordpayment.php?${queryParams}`);
       // if ((data.channel).toUpperCase() === "MONNIFY") {
       //   console.log("True");
       //   try {
@@ -215,12 +215,12 @@ const NewPaymentForm = ({ res }) => {
       // if (result.data.status === 200) {
       // const { assessmentId, taxId, channel } = result.data.body;
 
-      if (data.channel === "Bank Branch") {
-        await fetchBankPrint(assessmentId, taxId);
-      } else {
-        console.log("True");
-        payWithMonnify()
-      }
+      // if (data.channel === "Bank Branch") {
+      //   await fetchBankPrint(assessmentId, taxId);
+      // } else {
+      //   console.log("True");
+      //   payWithMonnify()
+      // }
       // else if (channel.toUpperCase() === "REMITA") {
       //   router.push(
       //     `${url.PAY_URL}remita/initialize.php?assessmentId=${assessmentId}&taxId=${taxId}`

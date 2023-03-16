@@ -23,7 +23,7 @@ const Index = () => {
             console.log("paymentID", paymentID);
             const fetchPost = () => {
                 setIsFetching(true)
-                axios.get(`https://irs.kg.gov.ng/etaxwebpay/api/getpayment.php?paymentref=${paymentID}`)
+                axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/getpayment.php?paymentref=${paymentID}`)
                     .then(function (response) {
                         let res = response.data.body;
                         setColData(res)

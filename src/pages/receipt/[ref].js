@@ -2,7 +2,7 @@ import SectionTitle from "../../components/section-title";
 import Widget from "../../components/widget";
 import { formatNumber } from "../../functions/numbers";
 import dateformat from "dateformat";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import url from "../../config/url";
 import axios from "axios";
@@ -20,7 +20,7 @@ const Index = ({ res }) => {
   }, [router.query.ref]);
   const { data, isLoading, error } = UseFetcher(
     // `${url.BASE_URL}web/receipt/${ref}`,
-    `https://irs.kg.gov.ng/etaxwebpay/api/getpayment.php?paymentref=${refId}`,
+    `https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/getpayment.php?paymentref=${refId}`,
     res
   );
   //fetch receipt
