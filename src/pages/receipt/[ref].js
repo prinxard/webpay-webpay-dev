@@ -15,11 +15,12 @@ const Index = ({ res }) => {
   const [submitting, setSubmitting] = useState(() => false);
   const [refId, setRefId] = useState(() => "")
   const router = useRouter();
-  let ref = router.query.ref;
-  // setRefId(() => 17687913 )
+  useEffect(() => {
+    setRefId(router.query.ref);
+  }, [router.query.ref]);
   const { data, isLoading, error } = UseFetcher(
     // `${url.BASE_URL}web/receipt/${ref}`,
-    `https://irs.kg.gov.ng/etaxwebpay/api/getpayment.php?paymentref=${ref}`,
+    `https://irs.kg.gov.ng/etaxwebpay/api/getpayment.php?paymentref=${refId}`,
     res
   );
   //fetch receipt
@@ -169,7 +170,7 @@ const Index = ({ res }) => {
                         // onClick={() =>
                         //   fetchReceipt({ ref: data.ref, taxId: data.t_payer })
                         // }
-                        onClick={() => router.push(`/receipt-download/${17687913}`)}
+                        onClick={() => router.push(`/receipt-download/${refId}`)}
                       // disabled={submitting}
                       >
                         <div className="flex justify-center">
@@ -178,7 +179,7 @@ const Index = ({ res }) => {
                                 ? "Downloading Receipt..."
                                 : "Download Receipt"
                               }`} */}
-                              Download Receipt
+                            Download Receipt
                           </p>
                           {/* <Loader
                             visible={submitting}
