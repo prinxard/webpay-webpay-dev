@@ -22,6 +22,7 @@ const NewPaymentForm = ({ res }) => {
   const [revItems, setRevitems] = useState([]);
   const [userInfo, setUserInfo] = useState(() => { });
   const [payInfo, setPayInfo] = useState(() => { });
+  const [globalRef, setGlobalRef] = useState(() => "");
   const [isFetchingUserInfo, setIsFetchingUserInfo] = useState(false);
   const [open, setOpen] = useState(false);
   const [openContinuePay, setOpenContinuePay] = useState(false);
@@ -33,6 +34,10 @@ const NewPaymentForm = ({ res }) => {
     mode: "onChange",
     reValidateMode: "onChange",
   });
+  const { register: registerForm2, handleSubmit: handleSubmitForm2, formState: { errors: errorsForm2 }, mode: modeForm2, reValidateMode: reValidateModeForm2 } = useForm({
+    mode: "onBlur",
+    reValidateMode: "onSubmit"
+  });
   const [channel, setChannel] = useState([
     // { key: "eTransact", value: "eTransact" },
     // { key: "WebPay", value: "Interswitch" },
@@ -41,8 +46,15 @@ const NewPaymentForm = ({ res }) => {
     { key: "Monnify", value: "Monnify" },
   ]);
 
+
+
   const router = useRouter();
-  var payReference = Math.floor((Math.random() * 1000000000) + 1);
+  useEffect(() => {
+    let payReference = Math.floor((Math.random() * 1000000000) + 1);
+    setGlobalRef(String(payReference))
+  }, []);
+
+ 
 
   const filter = (val) => {
     setRevitems(data.res.filter((re) => val === re.rev_code.split("/")[0]));
@@ -88,13 +100,10 @@ const NewPaymentForm = ({ res }) => {
 
   const returningPaymentInfo = async (e) => {
     let id = e.target.value;
-    if (id.length === 10 && !errors.hasOwnProperty("payref")) {
+    if (id.length === 12 && !errors.hasOwnProperty("payref")) {
       setIsFetchingUserInfo(true);
       try {
-        // let result = await axios.post(`${url.BASE_URL}web/user-info`, {
-        //   kgtin: id,
-        // });
-        let result = await axios.post(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/getuser.php?taxpayerid=${id}`);
+        let result = await axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/findpartpayment.php?assessment=${id}`);
         setPayInfo(() => result.data.body);
         setIsFetchingUserInfo(false);
       } catch (e) {
@@ -134,6 +143,60 @@ const NewPaymentForm = ({ res }) => {
     setOpen(true);
   };
 
+  const submitReturning = (data) => {
+    console.log("data", data);
+    function payReturningWithMonnify() {
+      MonnifySDK.initialize({
+        amount: data.amount,
+        currency: "NGN",
+        reference: globalRef,
+        customerName: data.name,
+        customerEmail: data.email,
+        apiKey: "MK_TEST_3NP2GGZBRN",
+        contractCode: "5214854348",
+        paymentDescription: data.description,
+        isTestMode: true,
+        metadata: {
+          "name": "Damilare",
+          "age": 45
+        },
+        paymentMethods: ["CARD",
+          "USSD",
+          "PHONE_NUMBER",
+          "DIRECT_DEBIT",
+          "CASH",
+          "ACCOUNT_TRANSFER",],
+        onComplete: function (response) {
+          //Implement what happens when transaction is completed.
+          // alert("Payment Successful!")
+          console.log(response);
+          window.location = `https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/monnify.php?verify=${response.paymentReference}`;
+          // var res_paid = response['amountPaid'];
+          // var res_status = response['paymentStatus'];
+          // var res_ref = response['transactionReference'];
+          // window.location = 'TaxPayDetails?verify=' + payReference;
+        },
+        onClose: function (data) {
+          // window.location=`${url.PAY_URL}monnify/failure.php?verify=${payReference}`;
+
+          //Implement what should happen when the modal is closed here
+          //	console.log(data);
+          // alert('Payment was not processed');
+        }
+      });
+    }
+    const queryParams = new URLSearchParams(data).toString();
+    try {
+      let result = axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/recordpayment.php?${queryParams}`);
+      console.log("result", result);
+      payReturningWithMonnify()
+    } catch (e) {
+
+      console.log(e);
+    }
+
+  }
+
   const proceedHandler = async (data) => {
 
 
@@ -148,7 +211,8 @@ const NewPaymentForm = ({ res }) => {
     formData.revenueSub = data.revenueItem;
     formData.agency = data.mda;
     formData.description = data.description;
-    formData.paymentRef = payReference;
+    formData.paymentRef = globalRef;
+    console.log("formData", formData);
     // Add field assessment_id for returning
 
     const queryParams = new URLSearchParams(formData).toString();
@@ -158,7 +222,7 @@ const NewPaymentForm = ({ res }) => {
       MonnifySDK.initialize({
         amount: data.amount,
         currency: "NGN",
-        reference: payReference,
+        reference: globalRef,
         customerName: data.name,
         customerEmail: data.email,
         apiKey: "MK_TEST_3NP2GGZBRN",
@@ -557,7 +621,7 @@ const NewPaymentForm = ({ res }) => {
                       <tbody className="divide-y">
                         <tr>
                           <td>Trans ID</td>
-                          <td>{payReference}</td>
+                          <td>{globalRef}</td>
                         </tr>
                         <tr>
                           <td>KGTIN</td>
@@ -656,15 +720,15 @@ const NewPaymentForm = ({ res }) => {
                 </div>
                 <div>
 
-                  <form className="p-4 text-sm">
+                  <form className="p-4 text-sm" onSubmit={handleSubmitForm2(submitReturning)}>
                     <div className="w-full">
                       <NewFormInput
                         label="Payment ref or Assessment ID"
                         onChange={(e) => returningPaymentInfo(e)}
                         required
-                        maxLength="10"
-                        ref={register({
-                          minLength: 10,
+                        maxLength="13"
+                        ref={registerForm2({
+                          minLength: 12,
                           maxLength: 13,
                           // pattern: {
                           //   value: /^[0-9]*[.]?[0-9]*$/,
@@ -673,12 +737,12 @@ const NewPaymentForm = ({ res }) => {
                         })}
                         name="assessId"
                       />
-                      {errors.assessId && errors.assessId.type === "minLength" && (
+                      {errorsForm2.assessId && errorsForm2.assessId.type === "minLength" && (
                         <p className="text-red-600">
                           must be at least 10 characters
                         </p>
                       )}
-                      {errors.assessId && errors.assessId.type === "maxLength" && (
+                      {errorsForm2.assessId && errorsForm2.assessId.type === "maxLength" && (
                         <p className="text-red-600">
                           must be not be more than 13 characters
                         </p>
@@ -695,107 +759,108 @@ const NewPaymentForm = ({ res }) => {
                       <NewFormInput
                         label="Name"
                         required
-                        ref={register()}
+                        ref={registerForm2()}
                         name="name"
-                        value={userInfo?.tp_name || ""}
+                        value={payInfo?.details || ""}
+                      />
+                    </div>
+                    <div className="">
+                      <NewFormInput
+                        label="description"
+                        required
+                        ref={registerForm2()}
+                        name="description"
+                        value={payInfo?.description || ""}
                       />
                     </div>
                     <div className="flex flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
+                      {/* <div className="">
+                        <NewFormInput
+                          label="Assessment ID"
+                          required
+                          ref={registerForm2()}
+                          name="assessment_id"
+                          value={payInfo?.assessment_id || ""}
+                        />
+                      </div> */}
                       <div className="">
                         <NewFormInput
-                          label="Amount"
+                          label="Payment Ref"
                           required
-                          ref={register()}
-                          name="amount"
-                          value={userInfo?.tp_name || ""}
+                          ref={registerForm2()}
+                          name="paymentRef"
+                          value={globalRef}
                         />
                       </div>
+
                       <div className="">
                         <NewFormInput
-                          label="Email"
-                          required
-                          ref={register()}
-                          name="email"
-                          value={userInfo?.tp_type || ""}
-                        />
-                      </div>
-                    </div>
-                    <div className="flex flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
-                      <div className="">
-                        <NewFormInput
-                          label="Phone"
-                          required
-                          ref={register()}
-                          name="name"
-                          value={userInfo?.tp_name || ""}
-                        />
-                      </div>
-                      <div className="">
-                        <NewFormInput
-                          label="Channel"
-                          required
-                          ref={register()}
-                          name="taxPayerType"
-                          value={userInfo?.tp_type || ""}
-                        />
-                      </div>
-                    </div>
-                    <div className="flex flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
-                      <div className="">
-                        <NewFormInput
-                          label="Description"
-                          required
-                          ref={register()}
-                          name="name"
-                          value={userInfo?.tp_name || ""}
-                        />
-                      </div>
-                      <div className="">
-                        <NewFormInput
-                          label="Station"
-                          required
-                          ref={register()}
-                          name="taxPayerType"
-                          value={userInfo?.tp_type || ""}
-                        />
-                      </div>
-                    </div>
-                    <div className="flex flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
-                      <div className="">
-                        <NewFormInput
-                          label="MDA"
-                          required
-                          ref={register()}
-                          name="name"
-                          value={userInfo?.tp_name || ""}
-                        />
-                      </div>
-                      <div className="">
-                        <NewFormInput
-                          label="Revenue Item"
-                          required
-                          ref={register()}
-                          name="rev"
-                          value={userInfo?.tp_type || ""}
+                          label="Total Amount"
+                          value={payInfo?.actualamount || ""}
                         />
                       </div>
                     </div>
 
+                    <div className="flex flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
+
+                      <div className="">
+                        <NewFormInput
+                          label="Balance"
+                          required
+                          ref={registerForm2()}
+                          name="amount"
+                          value={payInfo?.balance || ""}
+                        />
+                      </div>
+                      <div className="">
+                        <NewFormInput
+                          label="email"
+                          required
+                          ref={registerForm2()}
+                          name="email"
+                          value={payInfo?.acc_no}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex hidden flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
+                      <div className="">
+                        <NewFormInput
+                          label="station"
+                          required
+                          ref={registerForm2()}
+                          name="station"
+                          value={payInfo?.station || ""}
+                        />
+                      </div>
+                      <div className="">
+                        <NewFormInput
+                          label="revenue item"
+                          required
+                          ref={registerForm2()}
+                          name="revenueSub"
+                          value={payInfo?.rev_sub || ""}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex hidden flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
+                      <div className="">
+                        <NewFormInput
+                          label="MDA"
+                          required
+                          ref={registerForm2()}
+                          name="agency"
+                          value={payInfo?.agency || ""}
+                        />
+                      </div>
+
+                    </div>
+
                     <div className="flex items-center  p-4  dark:border-gray-700 border-solid rounded-b space-x-2">
                       <SubmitButton
-                        onClick={() => proceedHandler(previewData)}
-                        disabled={disabled}
+                      // onClick={() => proceedHandler()}
+                      // disabled={disabled}
                       >
-                        {`${loading ? "Generating..." : "Proceed"} `}
-                        <Loader
-                          visible={loading}
-                          type="ThreeDots"
-                          color="white"
-                          height={20}
-                          width={20}
-                          timeout={0}
-                          className="ml-2"
-                        />
+                        Continue Payment
                       </SubmitButton>
 
                       <button
