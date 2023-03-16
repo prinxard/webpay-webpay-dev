@@ -91,9 +91,10 @@ const NewPaymentForm = ({ res }) => {
     if (id.length === 10 && !errors.hasOwnProperty("payref")) {
       setIsFetchingUserInfo(true);
       try {
-        let result = await axios.post(`${url.BASE_URL}web/user-info`, {
-          kgtin: id,
-        });
+        // let result = await axios.post(`${url.BASE_URL}web/user-info`, {
+        //   kgtin: id,
+        // });
+        let result = await axios.post(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/getuser.php?taxpayerid=${id}`);
         setPayInfo(() => result.data.body);
         setIsFetchingUserInfo(false);
       } catch (e) {
@@ -218,7 +219,6 @@ const NewPaymentForm = ({ res }) => {
       if (data.channel === "Bank Branch") {
         await fetchBankPrint(assessmentId, taxId);
       } else {
-  
         payWithMonnify()
       }
       // else if (channel.toUpperCase() === "REMITA") {

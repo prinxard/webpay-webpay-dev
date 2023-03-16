@@ -199,11 +199,7 @@ const Index = ({ res }) => {
             </div>
           </Widget>
         </div>
-      ) : (
-        <div className="flex justify-center items-center p-2">
-          <p className=" text-red-600 font-semibold px-4">No Records found!</p>
-        </div>
-      )}
+      ) : ""}
     </>
   );
 };
