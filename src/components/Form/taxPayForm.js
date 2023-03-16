@@ -149,6 +149,7 @@ const NewPaymentForm = ({ res }) => {
     formData.agency = data.mda;
     formData.description = data.description;
     formData.paymentRef = payReference;
+    // Add field assessment_id for returning
 
     const queryParams = new URLSearchParams(formData).toString();
     console.log("queryParams", queryParams);
@@ -178,7 +179,7 @@ const NewPaymentForm = ({ res }) => {
           //Implement what happens when transaction is completed.
           // alert("Payment Successful!")
           console.log(response);
-          window.location = `${url.PAY_URL}monnify/response.php?verify=${response.paymentReference}`;
+          window.location = `https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/monnify.php?verify=${response.paymentReference}`;
           // var res_paid = response['amountPaid'];
           // var res_status = response['paymentStatus'];
           // var res_ref = response['transactionReference'];
@@ -656,51 +657,6 @@ const NewPaymentForm = ({ res }) => {
                 <div>
 
                   <form className="p-4 text-sm">
-                    {/* <table className="table-fixed w-full">
-                      <tbody className="divide-y">
-                        <tr>
-                          <td>Trans ID</td>
-                          <td>{payReference}</td>
-                        </tr>
-                        <tr>
-                          <td>KGTIN</td>
-                          <td>{previewData?.KGTIN}</td>
-                        </tr>
-                        <tr className="">
-                          <td>Phone Number</td>
-                          <td>{previewData?.phoneNumber}</td>
-                        </tr>
-                        <tr>
-                          <td>Email</td>
-                          <td>{previewData?.email}</td>
-                        </tr>
-                        <tr>
-                          <td>Tax Station</td>
-                          <td>{previewData?.station}</td>
-                        </tr>
-                        <tr>
-                          <td>Agency</td>
-                          <td>{previewData?.mdaName}</td>
-                        </tr>
-                        <tr>
-                          <td>Revenue Item</td>
-                          <td>{previewData?.itemName}</td>
-                        </tr>
-                        <tr>
-                          <td>Amount</td>
-                          <td>{formatNumber(previewData?.amount)}</td>
-                        </tr>
-                        <tr>
-                          <td>Description</td>
-                          <td>{previewData?.description}</td>
-                        </tr>
-                        <tr>
-                          <td>Payment Channel</td>
-                          <td>{previewData.channel}</td>
-                        </tr>
-                      </tbody>
-                    </table> */}
-
                     <div className="w-full">
                       <NewFormInput
                         label="Payment ref or Assessment ID"
@@ -709,30 +665,30 @@ const NewPaymentForm = ({ res }) => {
                         maxLength="10"
                         ref={register({
                           minLength: 10,
-                          maxLength: 11,
-                          pattern: {
-                            value: /^[0-9]*[.]?[0-9]*$/,
-                            message: "must be a number",
-                          },
+                          maxLength: 13,
+                          // pattern: {
+                          //   value: /^[0-9]*[.]?[0-9]*$/,
+                          //   message: "must be a number",
+                          // },
                         })}
-                        name="payref"
+                        name="assessId"
                       />
-                      {errors.payref && errors.payref.type === "minLength" && (
+                      {errors.assessId && errors.assessId.type === "minLength" && (
                         <p className="text-red-600">
-                          must be at least 10 digits
+                          must be at least 10 characters
                         </p>
                       )}
-                      {errors.payref && errors.payref.type === "maxLength" && (
+                      {errors.assessId && errors.assessId.type === "maxLength" && (
                         <p className="text-red-600">
-                          must be not be more than 10 digits
+                          must be not be more than 13 characters
                         </p>
                       )}
 
-                      {errors.payref && (
+                      {/* {errors.assessId && (
                         <p className="text-red-600 bg-white">
-                          {errors.payref.message}
+                          {errors.assessId.message}
                         </p>
-                      )}
+                      )} */}
                     </div>
 
                     <div className="">
