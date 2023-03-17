@@ -145,6 +145,13 @@ const Index = () => {
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-6 gap-2">
+                                    <p>BALANCE:</p>
+                                    <div className="col-span-4">
+                                        <p className="font-bold">NGN {formatNumber(Number(colData?.amount) - Number(colData?.amountpaid)) }</p>
+
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-6 gap-2">
                                     <p>BEING:</p>
                                     <div className="col-span-3">
                                         <p className="font-bold"> {`Payment for ${colData?.revenueCode || ""}`} </p>
