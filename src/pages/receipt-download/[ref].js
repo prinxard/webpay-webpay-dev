@@ -11,11 +11,10 @@ import ReactToPrint from 'react-to-print';
 
 
 const Index = () => {
-    const [colData, setColData] = useState([]);
+    const [colData, setColData] = useState({});
     const [isFetching, setIsFetching] = useState(false);
     const router = useRouter();
     const componentRef = useRef();
-    const [refNumber, setRefNumber] = useState(null);
 
     useEffect(() => {
         if (router && router.query) {
@@ -26,7 +25,7 @@ const Index = () => {
                 axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/getpayment.php?paymentref=${paymentID}`)
                     .then(function (response) {
                         let res = response.data.body;
-                        setColData(res)
+                        setColData(() => response.data.body)
                         console.log("res", res);
                         setIsFetching(false)
                     })
@@ -39,7 +38,7 @@ const Index = () => {
             fetchPost();
         }
     }, [router]);
-
+console.log("colData", colData);
     return (
         <>
             {isFetching && (
@@ -86,7 +85,7 @@ const Index = () => {
                             <p>KOGI STATE GOVERNMENT</p>
                             <section className="flex justify-between">
                                 <p className="font-bold">REVENUE RECEIPT</p>
-                                <p className="font-bold">{`Ref - ${colData.assessment_id}`}</p>
+                                <p className="font-bold">{`Ref - ${colData?.assessment_id || ""}`}</p>
                             </section>
                             {/* <section className="flex justify-end mt-8">
                                 <CoatOfArms />
@@ -97,17 +96,17 @@ const Index = () => {
                                 <div>
                                     <div className="grid grid-cols-6 gap-2">
                                         <p>PAID BY:</p>
-                                        <p className="font-bold col-span-2">{colData.taxpayerName}</p>
+                                        <p className="font-bold col-span-2">{colData?.details || ""}</p>
                                     </div>
                                     <div className="grid grid-cols-6 gap-2">
                                         <p>PAYER ID:</p>
                                         <p className="font-bold col-span-2">
-                                            {colData.taxpayerId}
+                                            {colData?.t_payer || ""}
                                         </p>
                                     </div>
                                     <div className="grid grid-cols-6 gap-2">
                                         <p>ADDRESS:</p>
-                                        <p className="font-bold col-span-2">{colData.taxpayerAddress}</p>
+                                        <p className="font-bold col-span-2">{colData?.taxpayerAddress || ""}</p>
                                     </div>
                                     <div className="flex mt-10">
                                         <div className='w-16 border-b-2'>
@@ -119,7 +118,7 @@ const Index = () => {
                                 </div>
                                 <div className="mt-6 mr-6">
                                     <QRCode
-                                        value={`https://irs.kg.gov.ng/verify/verify_receipt.php?ref=${colData.assessment_id}`}
+                                        value={`https://irs.kg.gov.ng/verify/verify_receipt.php?ref=${colData?.assessment_id || ""}`}
                                         size={120}
                                     />
                                 </div>
@@ -127,33 +126,33 @@ const Index = () => {
                             <div className="mt-3">
                                 <div className="grid grid-cols-6 gap-2">
                                     <p>PAYMENT DATE:</p>
-                                    <p className="font-bold col-span-2">{colData.tran_date}</p>
+                                    <p className="font-bold col-span-2">{colData?.tran_date || ""}</p>
                                 </div>
                                 <div className="grid grid-cols-6 gap-2">
                                     <p>AMOUNT:</p>
                                     <div className="col-span-4">
-                                        <p className="font-bold">NGN {formatNumber(colData.amount)}</p>
+                                        <p className="font-bold">NGN {formatNumber(colData?.amount || "")}</p>
 
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-6 gap-2">
                                     <p>BEING:</p>
                                     <div className="col-span-3">
-                                        <p className="font-bold"> {`Payment for ${colData.revenueCode}`} </p>
+                                        <p className="font-bold"> {`Payment for ${colData?.revenueCode || ""}`} </p>
                                         <small>
-                                            {colData.revenueItem}
+                                            {colData?.revenueItem || ""}
                                         </small>
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-6 gap-2">
                                     <p>DETAILS:</p>
                                     <div className="col-span-3">
-                                        <p className="font-bold"> {colData.description} </p>
+                                        <p className="font-bold"> {colData?.description || ""} </p>
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-6 gap-2">
                                     <p>PAID AT:</p>
-                                    <p className="font-bold"> {colData.bank} </p>
+                                    <p className="font-bold"> {colData?.bank || ""} </p>
                                 </div>
                                 <div className="grid grid-cols-6 gap-2">
                                     <p>AGENCY:</p>
@@ -163,7 +162,7 @@ const Index = () => {
                                 </div>
                                 <div className="grid grid-cols-6 gap-2">
                                     <p>TAX STATION:</p>
-                                    <p className="font-bold"> {colData.station} </p>
+                                    <p className="font-bold"> {colData?.station || ""} </p>
                                 </div>
                                 <div className="border-b-2 mt-3 w-4/4 ">
                                 </div>
