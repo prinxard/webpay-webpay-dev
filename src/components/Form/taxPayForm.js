@@ -169,7 +169,7 @@ const NewPaymentForm = ({ res }) => {
           //Implement what happens when transaction is completed.
           // alert("Payment Successful!")
           console.log(response);
-          window.location = `https://quickpay.irs.kg.gov.ng/receipt-download/${response.paymentReference}`;
+          window.location = `https://quickpaynewdev.vercel.app/receipt-download/${response.paymentReference}`;
           // var res_paid = response['amountPaid'];
           // var res_status = response['paymentStatus'];
           // var res_ref = response['transactionReference'];
@@ -242,7 +242,7 @@ const NewPaymentForm = ({ res }) => {
           //Implement what happens when transaction is completed.
           // alert("Payment Successful!")
           console.log(response);
-          window.location = `https://quickpay.irs.kg.gov.ng/receipt-download/${response.paymentReference}`;
+          window.location = `https://quickpaynewdev.vercel.app/receipt-download/${response.paymentReference}`;
           // var res_paid = response['amountPaid'];
           // var res_status = response['paymentStatus'];
           // var res_ref = response['transactionReference'];
