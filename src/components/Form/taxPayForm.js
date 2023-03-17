@@ -736,7 +736,7 @@ const NewPaymentForm = ({ res }) => {
                           //   message: "must be a number",
                           // },
                         })}
-                        name="assessId"
+                        name="assessment_id"
                       />
                       {errorsForm2.assessId && errorsForm2.assessId.type === "minLength" && (
                         <p className="text-red-600">
