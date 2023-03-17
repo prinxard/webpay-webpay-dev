@@ -38,7 +38,7 @@ const Index = () => {
             fetchPost();
         }
     }, [router]);
-console.log("colData", colData);
+    console.log("colData", colData);
     return (
         <>
             {isFetching && (
@@ -82,6 +82,8 @@ console.log("colData", colData);
                             </div>
                         </div>
                         <div className="border p-6" ref={componentRef}>
+                            <p className="font-bold text-center">{colData?.pendingpayment ? "Incomplete Payment" : ""}</p>
+                            <p className="font-bold text-center">{colData?.amountpaid == "0" ? "Failed Payment" : ""}</p>
                             <p>KOGI STATE GOVERNMENT</p>
                             <section className="flex justify-between">
                                 <p className="font-bold">REVENUE RECEIPT</p>
@@ -129,9 +131,16 @@ console.log("colData", colData);
                                     <p className="font-bold col-span-2">{colData?.tran_date || ""}</p>
                                 </div>
                                 <div className="grid grid-cols-6 gap-2">
-                                    <p>AMOUNT:</p>
+                                    <p>TOTAL AMOUNT:</p>
                                     <div className="col-span-4">
                                         <p className="font-bold">NGN {formatNumber(colData?.amount || "")}</p>
+
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-6 gap-2">
+                                    <p>AMOUNT PAID:</p>
+                                    <div className="col-span-4">
+                                        <p className="font-bold">NGN {formatNumber(colData?.amountpaid || "")}</p>
 
                                     </div>
                                 </div>

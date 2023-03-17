@@ -54,7 +54,7 @@ const NewPaymentForm = ({ res }) => {
     setGlobalRef(String(payReference))
   }, []);
 
- 
+
 
   const filter = (val) => {
     setRevitems(data.res.filter((re) => val === re.rev_code.split("/")[0]));
@@ -144,6 +144,8 @@ const NewPaymentForm = ({ res }) => {
   };
 
   const submitReturning = (data) => {
+    data.phoneNumber = "08131113676"
+    data.channel = "monnify"
     function payReturningWithMonnify() {
       MonnifySDK.initialize({
         amount: data.amount,
@@ -753,7 +755,6 @@ const NewPaymentForm = ({ res }) => {
                         </p>
                       )} */}
                     </div>
-
                     <div className="">
                       <NewFormInput
                         label="Name"
@@ -763,25 +764,28 @@ const NewPaymentForm = ({ res }) => {
                         value={payInfo?.details || ""}
                       />
                     </div>
-                    <div className="">
-                      <NewFormInput
-                        label="description"
-                        required
-                        ref={registerForm2()}
-                        name="description"
-                        value={payInfo?.description || ""}
-                      />
-                    </div>
                     <div className="flex flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
-                      {/* <div className="">
+                      <div className="">
                         <NewFormInput
-                          label="Assessment ID"
+                          label="description"
                           required
                           ref={registerForm2()}
-                          name="assessment_id"
-                          value={payInfo?.assessment_id || ""}
+                          name="description"
+                          value={payInfo?.description || ""}
                         />
-                      </div> */}
+                      </div>
+                      <div className="">
+                        <NewFormInput
+                          label="KGTIN"
+                          required
+                          ref={registerForm2()}
+                          name="KGTIN"
+                          value={payInfo?.t_payer || ""}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
+
                       <div className="">
                         <NewFormInput
                           label="Payment Ref"
@@ -842,6 +846,7 @@ const NewPaymentForm = ({ res }) => {
                       </div>
                     </div>
                     <div className="flex hidden flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
+
                       <div className="">
                         <NewFormInput
                           label="MDA"
