@@ -14,6 +14,7 @@ import { ProcessorSpinner } from "../spiner";
 import { saveAs } from "file-saver";
 import { taxStation } from "../../json/taxOffice";
 import UseFetcher from "../fetcher/useFetcher";
+import Link from "next/dist/client/link";
 
 
 
@@ -21,7 +22,7 @@ const NewPaymentForm = ({ res }) => {
   const { data } = UseFetcher(`${url.BASE_URL}web/get-mdas-items`, res);
   const [revItems, setRevitems] = useState([]);
   const [userInfo, setUserInfo] = useState(() => { });
-  const [payInfo, setPayInfo] = useState(() => { });
+  const [payInfo, setPayInfo] = useState(() => {});
   const [globalRef, setGlobalRef] = useState(() => "");
   const [isFetchingUserInfo, setIsFetchingUserInfo] = useState(false);
   const [open, setOpen] = useState(false);
@@ -198,6 +199,8 @@ const NewPaymentForm = ({ res }) => {
 
   }
 
+  console.log("payInfo?.balance", payInfo);
+
   const proceedHandler = async (data) => {
 
 
@@ -214,7 +217,6 @@ const NewPaymentForm = ({ res }) => {
     formData.description = data.description;
     formData.paymentRef = globalRef;
     console.log("formData", formData);
-    // Add field assessment_id for returning
 
     const queryParams = new URLSearchParams(formData).toString();
     console.log("queryParams", queryParams);
@@ -308,6 +310,8 @@ const NewPaymentForm = ({ res }) => {
       console.log(e);
     }
   };
+
+  console.log("payInfo?.balance", payInfo?.balance);
 
   const fetchBankPrint = async (assessmentId, taxId) => {
     try {
@@ -722,6 +726,13 @@ const NewPaymentForm = ({ res }) => {
                 <div>
 
                   <form className="p-4 text-sm" onSubmit={handleSubmitForm2(submitReturning)}>
+                            {payInfo?.balance == "0" ?
+                          <p className="text-green-600 bg-white text-center">
+                           Payment Completed!
+                          </p>
+                        :
+                      ""
+                      }
                     <div className="w-full">
                       <NewFormInput
                         label="Payment ref or Assessment ID"
@@ -754,6 +765,7 @@ const NewPaymentForm = ({ res }) => {
                           {errors.assessId.message}
                         </p>
                       )} */}
+              
                     </div>
                     <div className="">
                       <NewFormInput
@@ -821,7 +833,7 @@ const NewPaymentForm = ({ res }) => {
                           required
                           ref={registerForm2()}
                           name="email"
-                          value={payInfo?.acc_no}
+                          value={payInfo?.acc_no || ""}
                         />
                       </div>
                     </div>
@@ -860,12 +872,18 @@ const NewPaymentForm = ({ res }) => {
                     </div>
 
                     <div className="flex items-center  p-4  dark:border-gray-700 border-solid rounded-b space-x-2">
-                      <SubmitButton
-                      // onClick={() => proceedHandler()}
-                      // disabled={disabled}
-                      >
-                        Continue Payment
-                      </SubmitButton>
+                      {payInfo?.balance == "0" ?
+                        <Link href={`/receipt-download/${payInfo?.assessment_id}`}>
+                          <SubmitButton>
+                            Get receipt
+                          </SubmitButton>
+                        </Link>
+
+                        :
+                        <SubmitButton>
+                          Continue Payment
+                        </SubmitButton>
+                      }
 
                       <button
                         disabled={disabled}

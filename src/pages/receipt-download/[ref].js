@@ -18,22 +18,36 @@ const Index = () => {
 
     useEffect(() => {
         if (router && router.query) {
-            let paymentID = router.query.ref;
+            let paymentID = router.query?.ref || "";
             console.log("paymentID", paymentID);
             const fetchPost = () => {
                 setIsFetching(true)
-                axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/getpayment.php?paymentref=${paymentID}`)
-                    .then(function (response) {
-                        let res = response.data.body;
-                        setColData(() => response.data.body)
-                        console.log("res", res);
-                        setIsFetching(false)
-                    })
-                    .catch(function (error) {
-                        setIsFetching(false)
-                        console.log(error);
-                    })
+                if (paymentID.includes("FA")) {
+                    axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/getpayment.php?paymentref=${paymentID}&by=assessment`)
+                        .then(function (response) {
+                            let res = response.data.body;
+                            setColData(() => response.data.body)
+                            console.log("res", res);
+                            setIsFetching(false)
+                        })
+                        .catch(function (error) {
+                            setIsFetching(false)
+                            console.log(error);
+                        })
+                } else {
 
+                    axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/getpayment.php?paymentref=${paymentID}`)
+                        .then(function (response) {
+                            let res = response.data.body;
+                            setColData(() => response.data.body)
+                            console.log("res", res);
+                            setIsFetching(false)
+                        })
+                        .catch(function (error) {
+                            setIsFetching(false)
+                            console.log(error);
+                        })
+                }
             };
             fetchPost();
         }
@@ -147,7 +161,7 @@ const Index = () => {
                                 <div className="grid grid-cols-6 gap-2">
                                     <p>BALANCE:</p>
                                     <div className="col-span-4">
-                                        <p className="font-bold">NGN {formatNumber(Number(colData?.amount) - Number(colData?.amountpaid)) }</p>
+                                        <p className="font-bold">NGN {formatNumber(Number(colData?.amount) - Number(colData?.amountpaid))}</p>
 
                                     </div>
                                 </div>
