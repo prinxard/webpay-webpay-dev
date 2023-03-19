@@ -22,7 +22,7 @@ const NewPaymentForm = ({ res }) => {
   const { data } = UseFetcher(`${url.BASE_URL}web/get-mdas-items`, res);
   const [revItems, setRevitems] = useState([]);
   const [userInfo, setUserInfo] = useState(() => { });
-  const [payInfo, setPayInfo] = useState(() => {});
+  const [payInfo, setPayInfo] = useState(() => { });
   const [globalRef, setGlobalRef] = useState(() => "");
   const [isFetchingUserInfo, setIsFetchingUserInfo] = useState(false);
   const [open, setOpen] = useState(false);
@@ -216,6 +216,7 @@ const NewPaymentForm = ({ res }) => {
     formData.agency = data.mda;
     formData.description = data.description;
     formData.paymentRef = globalRef;
+    formData.paymentgateway = "MONNIFY"
     console.log("formData", formData);
 
     const queryParams = new URLSearchParams(formData).toString();
@@ -726,13 +727,13 @@ const NewPaymentForm = ({ res }) => {
                 <div>
 
                   <form className="p-4 text-sm" onSubmit={handleSubmitForm2(submitReturning)}>
-                            {payInfo?.balance == "0" ?
-                          <p className="text-green-600 bg-white text-center">
-                           Payment Completed!
-                          </p>
-                        :
+                    {payInfo?.balance == "0" ?
+                      <p className="text-green-600 bg-white text-center">
+                        Payment Completed!
+                      </p>
+                      :
                       ""
-                      }
+                    }
                     <div className="w-full">
                       <NewFormInput
                         label="Payment ref or Assessment ID"
@@ -765,7 +766,7 @@ const NewPaymentForm = ({ res }) => {
                           {errors.assessId.message}
                         </p>
                       )} */}
-              
+
                     </div>
                     <div className="">
                       <NewFormInput
@@ -834,6 +835,17 @@ const NewPaymentForm = ({ res }) => {
                           ref={registerForm2()}
                           name="email"
                           value={payInfo?.acc_no || ""}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
+                    <div className="">
+                        <NewFormInput
+                          label="Channel"
+                          required
+                          ref={registerForm2()}
+                          name="paymentgateway"
+                          value={payInfo?.paymentgateway || ""}
                         />
                       </div>
                     </div>
