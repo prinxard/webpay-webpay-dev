@@ -101,7 +101,7 @@ const NewPaymentForm = ({ res }) => {
 
   const returningPaymentInfo = async (e) => {
     let id = e.target.value;
-    if (id.length === 12 && !errors.hasOwnProperty("payref")) {
+    if (id.length === 12 && !errors.hasOwnProperty("assessment_id")) {
       setIsFetchingUserInfo(true);
       try {
         let result = await axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/findpartpayment.php?assessment=${id}`);
@@ -342,6 +342,7 @@ const NewPaymentForm = ({ res }) => {
       alert("Unable to generate pdf. Please try again");
     }
   };
+  console.log("payInfo?.balance", payInfo?.balance);
 
   return (
     <>
@@ -734,235 +735,171 @@ const NewPaymentForm = ({ res }) => {
                       :
                       ""
                     }
-                    {
-                      payInfo?.balance == "0" ?
-                        <div>
-                          <div className="w-full">
-                            <NewFormInput
-                              label="Payment ref or Assessment ID"
-                              onChange={(e) => returningPaymentInfo(e)}
-                              required
-                              maxLength="13"
-                              ref={registerForm2({
-                                minLength: 12,
-                                maxLength: 13,
-                                // pattern: {
-                                //   value: /^[0-9]*[.]?[0-9]*$/,
-                                //   message: "must be a number",
-                                // },
-                              })}
-                              name="assessment_id"
-                            />
-                            {errorsForm2.assessId && errorsForm2.assessId.type === "minLength" && (
-                              <p className="text-red-600">
-                                must be at least 10 characters
-                              </p>
-                            )}
-                            {errorsForm2.assessId && errorsForm2.assessId.type === "maxLength" && (
-                              <p className="text-red-600">
-                                must be not be more than 13 characters
-                              </p>
-                            )}
-                          </div>
-
-                          <div className="flex items-center  p-4  dark:border-gray-700 border-solid rounded-b space-x-2">
-                            {payInfo?.balance == "0" ?
-                              <Link href={`/receipt-download/${payInfo?.assessment_id}`}>
-                                <SubmitButton>
-                                  Get receipt
-                                </SubmitButton>
-                              </Link>
-
-                              :
-                              <SubmitButton>
-                                Continue Payment
-                              </SubmitButton>
-                            }
-
-                            <button
-                              disabled={disabled}
-                              className="disabled:cursor-not-allowed btn btn-default btn-rounded bg-white hover:bg-gray-100 text-gray-900"
-                              type="button"
-                              onClick={() => setOpenContinuePay(false)}
-                            >
-                              Cancel
-                            </button>
-                          </div>
-
+                    <div className="w-full">
+                      <NewFormInput
+                        label="Assessment ID"
+                        onChange={(e) => returningPaymentInfo(e)}
+                        required
+                        maxLength="13"
+                        ref={registerForm2({
+                          minLength: 12,
+                          maxLength: 13,
+                        })}
+                        name="assessment_id"
+                      />
+                      {errorsForm2.assessment_id && errorsForm2.assessment_id.type === "minLength" && (
+                        <p className="text-red-600">
+                          must be at least 10 characters
+                        </p>
+                      )}
+                      {errorsForm2.assessment_id && errorsForm2.assessment_id.type === "maxLength" && (
+                        <p className="text-red-600">
+                          must be not be more than 13 characters
+                        </p>
+                      )}
+                    </div>
+                    {payInfo?.balance > 0 ?
+                      <div>
+                        <div className="">
+                          <NewFormInput
+                            label="Name"
+                            required
+                            ref={registerForm2()}
+                            name="name"
+                            value={payInfo?.details || ""}
+                          />
                         </div>
-                        :
-                        <div>
-                          <div className="w-full">
+                        <div className="flex flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
+                          <div className="">
                             <NewFormInput
-                              label="Payment ref or Assessment ID"
-                              onChange={(e) => returningPaymentInfo(e)}
+                              label="description"
                               required
-                              maxLength="13"
-                              ref={registerForm2({
-                                minLength: 12,
-                                maxLength: 13,
-                                // pattern: {
-                                //   value: /^[0-9]*[.]?[0-9]*$/,
-                                //   message: "must be a number",
-                                // },
-                              })}
-                              name="assessment_id"
+                              ref={registerForm2()}
+                              name="description"
+                              value={payInfo?.description || ""}
                             />
-                            {errorsForm2.assessId && errorsForm2.assessId.type === "minLength" && (
-                              <p className="text-red-600">
-                                must be at least 10 characters
-                              </p>
-                            )}
-                            {errorsForm2.assessId && errorsForm2.assessId.type === "maxLength" && (
-                              <p className="text-red-600">
-                                must be not be more than 13 characters
-                              </p>
-                            )}
-
-
-
                           </div>
                           <div className="">
                             <NewFormInput
-                              label="Name"
+                              label="KGTIN"
                               required
                               ref={registerForm2()}
-                              name="name"
-                              value={payInfo?.details || ""}
+                              name="KGTIN"
+                              value={payInfo?.t_payer || ""}
                             />
                           </div>
-                          <div className="flex flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
-                            <div className="">
-                              <NewFormInput
-                                label="description"
-                                required
-                                ref={registerForm2()}
-                                name="description"
-                                value={payInfo?.description || ""}
-                              />
-                            </div>
-                            <div className="">
-                              <NewFormInput
-                                label="KGTIN"
-                                required
-                                ref={registerForm2()}
-                                name="KGTIN"
-                                value={payInfo?.t_payer || ""}
-                              />
-                            </div>
-                          </div>
-                          <div className="flex flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
+                        </div>
+                        <div className="flex flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
 
-                            <div className="">
-                              <NewFormInput
-                                label="Payment Ref"
-                                required
-                                ref={registerForm2()}
-                                name="paymentRef"
-                                value={globalRef}
-                              />
-                            </div>
-
-                            <div className="">
-                              <NewFormInput
-                                label="Total Amount"
-                                value={payInfo?.actualamount || ""}
-                              />
-                            </div>
+                          <div className="">
+                            <NewFormInput
+                              label="Payment Ref"
+                              required
+                              ref={registerForm2()}
+                              name="paymentRef"
+                              value={globalRef}
+                            />
                           </div>
 
-                          <div className="flex flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
-
-                            <div className="">
-                              <NewFormInput
-                                label="Balance"
-                                required
-                                ref={registerForm2()}
-                                name="amount"
-                                value={payInfo?.balance || ""}
-                              />
-                            </div>
-                            <div className="">
-                              <NewFormInput
-                                label="email"
-                                required
-                                ref={registerForm2()}
-                                name="email"
-                                value={payInfo?.acc_no || ""}
-                              />
-                            </div>
-                          </div>
-                          <div className="flex flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
-                            <div className="">
-                              <NewFormInput
-                                label="Channel"
-                                required
-                                ref={registerForm2()}
-                                name="paymentgateway"
-                                value={payInfo?.paymentgateway || ""}
-                              />
-                            </div>
-                          </div>
-                          <div className="flex hidden flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
-                            <div className="">
-                              <NewFormInput
-                                label="station"
-                                required
-                                ref={registerForm2()}
-                                name="station"
-                                value={payInfo?.station || ""}
-                              />
-                            </div>
-                            <div className="">
-                              <NewFormInput
-                                label="revenue item"
-                                required
-                                ref={registerForm2()}
-                                name="revenueSub"
-                                value={payInfo?.rev_sub || ""}
-                              />
-                            </div>
-                          </div>
-                          <div className="flex hidden flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
-
-                            <div className="">
-                              <NewFormInput
-                                label="MDA"
-                                required
-                                ref={registerForm2()}
-                                name="agency"
-                                value={payInfo?.agency || ""}
-                              />
-                            </div>
-
-                          </div>
-
-                          <div className="flex items-center  p-4  dark:border-gray-700 border-solid rounded-b space-x-2">
-                            {payInfo?.balance == "0" ?
-                              <Link href={`/receipt-download/${payInfo?.assessment_id}`}>
-                                <SubmitButton>
-                                  Get receipt
-                                </SubmitButton>
-                              </Link>
-
-                              :
-                              <SubmitButton>
-                                Continue Payment
-                              </SubmitButton>
-                            }
-
-                            <button
-                              disabled={disabled}
-                              className="disabled:cursor-not-allowed btn btn-default btn-rounded bg-white hover:bg-gray-100 text-gray-900"
-                              type="button"
-                              onClick={() => setOpenContinuePay(false)}
-                            >
-                              Cancel
-                            </button>
+                          <div className="">
+                            <NewFormInput
+                              label="Total Amount"
+                              value={payInfo?.actualamount || ""}
+                            />
                           </div>
                         </div>
+
+                        <div className="flex flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
+
+                          <div className="">
+                            <NewFormInput
+                              label="Balance"
+                              required
+                              ref={registerForm2()}
+                              name="amount"
+                              value={payInfo?.balance || ""}
+                            />
+                          </div>
+                          <div className="">
+                            <NewFormInput
+                              label="email"
+                              required
+                              ref={registerForm2()}
+                              name="email"
+                              value={payInfo?.acc_no || ""}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
+                          <div className="">
+                            <NewFormInput
+                              label="Channel"
+                              required
+                              ref={registerForm2()}
+                              name="paymentgateway"
+                              value={payInfo?.paymentgateway || ""}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex hidden flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
+                          <div className="">
+                            <NewFormInput
+                              label="station"
+                              required
+                              ref={registerForm2()}
+                              name="station"
+                              value={payInfo?.station || ""}
+                            />
+                          </div>
+                          <div className="">
+                            <NewFormInput
+                              label="revenue item"
+                              required
+                              ref={registerForm2()}
+                              name="revenueSub"
+                              value={payInfo?.rev_sub || ""}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex hidden flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
+
+                          <div className="">
+                            <NewFormInput
+                              label="MDA"
+                              required
+                              ref={registerForm2()}
+                              name="agency"
+                              value={payInfo?.agency || ""}
+                            />
+                          </div>
+
+                        </div>
+                      </div>
+                      : ""
                     }
 
+                    <div className="flex items-center  p-4  dark:border-gray-700 border-solid rounded-b space-x-2">
+                      {payInfo?.balance === 0 ?
+                        <Link href={`/receipt-download/${payInfo?.assessment_id}`}>
+                          <SubmitButton>
+                            Get receipt
+                          </SubmitButton>
+                        </Link>
+                        :
+                        <SubmitButton>
+                          Continue Payment
+                        </SubmitButton>
+                      }
+
+                      <button
+                        disabled={disabled}
+                        className="disabled:cursor-not-allowed btn btn-default btn-rounded bg-white hover:bg-gray-100 text-gray-900"
+                        type="button"
+                        onClick={() => setOpenContinuePay(false)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </form>
                 </div>
               </div>
