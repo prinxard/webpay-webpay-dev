@@ -239,6 +239,29 @@ const NewPaymentForm = ({ res }) => {
       });
     }
 
+    const payWithCredo = () => {
+      const headers = {
+        'Authorization': '0PRI0243v9oSOd551Mw506Tsxm3Kqm5c',
+        'Content-Type': 'application/json',
+      };
+      let credoBody = {
+        "amount": data.amount,
+        "callbackUrl": `https://quickpaynewdev.vercel.app/receipt-download/`,
+        "email": data.email,
+        "customerFirstName": data.name,
+        "reference": globalRef
+      }
+
+      axios.post(`https://api.public.credodemo.com/transaction/initialize`, credoBody, {
+        headers: headers
+      }).then(function (response) {
+        window.location = response.data.data.authorizationUrl
+
+      }).catch(function (err) {
+        console.log(err);
+      })
+
+    }
 
     try {
       setLoading(true);
@@ -253,25 +276,7 @@ const NewPaymentForm = ({ res }) => {
         payWithMonnify()
       }
       else if (data.paymentgateway.toUpperCase() === "CREDO") {
-        const headers = {
-          'Authorization': '0PRI0243v9oSOd551Mw506Tsxm3Kqm5c',
-          'Content-Type': 'application/json',
-        };
-        let credoBody = {
-          "amount": data.amount,
-          "callbackUrl": `https://quickpaynewdev.vercel.app/receipt-download/`,
-          "email": data.email,
-          "customerFirstName": data.name,
-          "reference": globalRef
-        }
-        try {
-          let credoresult = await axios.post(`https://api.public.credodemo.com/transaction/initialize`, credoBody, {
-            headers: headers
-          })
-          window.location = credoresult.data.data.authorizationUrl
-        } catch (error) {
-          console.log(error);
-        }
+        payWithCredo()
       }
       // https://quickpaynewdev.vercel.app/receipt-download/?reference=570620461&transAmount=200.00&transRef=C4Ns00tPjf0221gb43ZF&errorMessage=Approved&errorCode=00&currency=NGN&status=0
 
