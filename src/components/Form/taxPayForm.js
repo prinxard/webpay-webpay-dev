@@ -196,7 +196,6 @@ const NewPaymentForm = ({ res }) => {
     formData.name = data.name;
     formData.email = data.email;
     formData.phoneNumber = data.phoneNumber;
-    formData.channel = data.channel;
     formData.station = data.station;
     formData.amount = data.amount;
     formData.KGTIN = data.KGTIN;
@@ -204,8 +203,9 @@ const NewPaymentForm = ({ res }) => {
     formData.agency = data.mda;
     formData.description = data.description;
     formData.paymentRef = globalRef;
-    formData.paymentgateway = "MONNIFY"
-    
+    formData.paymentgateway = data.paymentgateway
+
+
     const queryParams = new URLSearchParams(formData).toString();
 
     function payWithMonnify() {
@@ -230,31 +230,32 @@ const NewPaymentForm = ({ res }) => {
           "CASH",
           "ACCOUNT_TRANSFER",],
         onComplete: function (response) {
-          //Implement what happens when transaction is completed.
-          // alert("Payment Successful!")
           console.log(response);
           window.location = `https://quickpaynewdev.vercel.app/receipt-download/${response.paymentReference}`;
-          // var res_paid = response['amountPaid'];
-          // var res_status = response['paymentStatus'];
-          // var res_ref = response['transactionReference'];
-          // window.location = 'TaxPayDetails?verify=' + payReference;
         },
         onClose: function (data) {
-          // window.location=`${url.PAY_URL}monnify/failure.php?verify=${payReference}`;
-
-          //Implement what should happen when the modal is closed here
-          //	console.log(data);
-          // alert('Payment was not processed');
         }
       });
     }
 
+    function payWithCredo() {
+      credo.initiatePayments({
+        amount: 100,
+        currency: "NGN",
+        redirectUrl: "https://mywebsites.com/callback",
+        transRef: "hytry5",
+        paymentOptions: "CARD,BANK,USSD",
+        customerEmail: "customer@something.com",
+        customerName: "John Doe",
+        customerPhoneNo: "+234 813 000 000"
+      }).then((response) => {
+        console.log(response.body)
+      })
+    }
+
     try {
-      // // let result = (`https://irs.kg.gov.ng/etaxwebpay/api/recordpayment.php?${queryParams}`);
-      // window.location.href = result
       setLoading(true);
       setDisabled(true);
-      // let result = await axios.post(`${url.BASE_URL}web/new-payment`, formData);
 
       let result = axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/recordpayment.php?${queryParams}`);
       // if ((data.channel).toUpperCase() === "MONNIFY") {
@@ -266,30 +267,19 @@ const NewPaymentForm = ({ res }) => {
       //     console.log(error);
       //   }
       // }
-      console.log("result", result);
-      // alert(payReference)
       // if (result.data.status === 200) {
       // const { assessmentId, taxId, channel } = result.data.body;
 
-      if (data.channel === "Bank Branch") {
+      if (data.paymentgateway === "Bank Branch") {
         await fetchBankPrint(assessmentId, taxId);
-      } else {
+      }
+      else if (data.paymentgateway.toUpperCase() === "MONNIFY") {
         payWithMonnify()
       }
-      // else if (channel.toUpperCase() === "REMITA") {
-      //   router.push(
-      //     `${url.PAY_URL}remita/initialize.php?assessmentId=${assessmentId}&taxId=${taxId}`
-      //   );
-      // } else if (channel.toUpperCase() === "ETRANSACT") {
-      //   router.push(
-      //     `${url.PAY_URL}etransact/initialize.php?assessmentId=${assessmentId}&taxId=${taxId}`
-      //   );
-      // } else if (channel.toUpperCase() === "WEBPAY") {
-      //   router.push(
-      //     `${url.PAY_URL}interswitch/initialize.php?assessmentId=${assessmentId}&taxId=${taxId}`
-      //   );
-      // }
-      // }
+      else if (data.paymentgateway.toUpperCase() === "CREDO") {
+        payWithCredo()
+      }
+
 
     } catch (e) {
       setLoading(false);
@@ -298,7 +288,6 @@ const NewPaymentForm = ({ res }) => {
     }
   };
 
-  console.log("payInfo?.balance", payInfo?.balance);
 
   const fetchBankPrint = async (assessmentId, taxId) => {
     try {
@@ -328,7 +317,6 @@ const NewPaymentForm = ({ res }) => {
       alert("Unable to generate pdf. Please try again");
     }
   };
-  console.log("payInfo?.balance", payInfo?.balance);
 
   return (
     <>
@@ -561,7 +549,7 @@ const NewPaymentForm = ({ res }) => {
             <div className="w-full lg:w-1/4 lg:mt-6">
               <select
                 required
-                name="channel"
+                name="paymentgateway"
                 ref={register()}
                 className="w-full  focus:outline-none focus:ring-0 focus:ring-offset-0  border-transparent bg-transparent text-gray-600 text-md border-none"
               >
@@ -650,7 +638,7 @@ const NewPaymentForm = ({ res }) => {
                         </tr>
                         <tr>
                           <td>Payment Channel</td>
-                          <td>{previewData.channel}</td>
+                          <td>{previewData.paymentgateway}</td>
                         </tr>
                       </tbody>
                     </table>
