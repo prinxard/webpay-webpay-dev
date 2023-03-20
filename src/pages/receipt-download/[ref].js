@@ -181,8 +181,8 @@ const Index = () => {
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-6 gap-2">
-                                    <p>PAID AT:</p>
-                                    <p className="font-bold"> {colData?.bank || ""} </p>
+                                    <p>Payment Method:</p>
+                                    <p className="font-bold"> {colData?.pmt_meth || ""} </p>
                                 </div>
                                 <div className="grid grid-cols-6 gap-2">
                                     <p>AGENCY:</p>

@@ -48,7 +48,7 @@ const NewPaymentForm = ({ res }) => {
   ]);
 
 
-  
+
   const router = useRouter();
   useEffect(() => {
     let payReference = Math.floor((Math.random() * 1000000000) + 1);
@@ -198,6 +198,7 @@ const NewPaymentForm = ({ res }) => {
     formData.phoneNumber = data.phoneNumber;
     formData.station = data.station;
     formData.amount = data.amount;
+    formData.channel = data.paymentgateway;
     formData.KGTIN = data.KGTIN;
     formData.revenueSub = data.revenueItem;
     formData.agency = data.mda;
@@ -231,46 +232,19 @@ const NewPaymentForm = ({ res }) => {
           "ACCOUNT_TRANSFER",],
         onComplete: function (response) {
           console.log(response);
-          router.push(`/receipt-download/${response.paymentReference}`);
+          window.location = `https://quickpaynewdev.vercel.app/receipt-download/${response.paymentReference}`;
         },
         onClose: function (data) {
         }
       });
     }
 
-    function payWithCredo() {
-      const headers = {
-        'Authorization': 'Bearer my-jwt-token',
-        'Content-Type': 'application/json',
-      };
-      let credoBody = {
-        "amount": data.amount,
-        "callbackUrl": router.push(`/receipt-download/${response.reference}`),
-        "email": data.email,
-        "customerFirstName": data.name,
-        "reference": globalRef
-      }
-      let result = axios.post(`https://api.credocentral.com`, credoBody, {
-        headers: headers
-      });
-    }
 
     try {
       setLoading(true);
-      setDisabled(true);
+      // setDisabled(true);
 
       let result = axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/recordpayment.php?${queryParams}`);
-      // if ((data.channel).toUpperCase() === "MONNIFY") {
-      //   console.log("True");
-      //   try {
-      //     payWithMonnify()
-
-      //   } catch (error) {
-      //     console.log(error);
-      //   }
-      // }
-      // if (result.data.status === 200) {
-      // const { assessmentId, taxId, channel } = result.data.body;
 
       if (data.paymentgateway === "Bank Branch") {
         await fetchBankPrint(assessmentId, taxId);
@@ -279,13 +253,31 @@ const NewPaymentForm = ({ res }) => {
         payWithMonnify()
       }
       else if (data.paymentgateway.toUpperCase() === "CREDO") {
-        payWithCredo()
+        const headers = {
+          'Authorization': '0PRI0243v9oSOd551Mw506Tsxm3Kqm5c',
+          'Content-Type': 'application/json',
+        };
+        let credoBody = {
+          "amount": data.amount,
+          "callbackUrl": `https://quickpaynewdev.vercel.app/receipt-download/`,
+          "email": data.email,
+          "customerFirstName": data.name,
+          "reference": globalRef
+        }
+        try {
+          let credoresult = await axios.post(`https://api.public.credodemo.com/transaction/initialize`, credoBody, {
+            headers: headers
+          })
+          window.location = credoresult.data.data.authorizationUrl
+        } catch (error) {
+          console.log(error);
+        }
       }
-
+      // https://quickpaynewdev.vercel.app/receipt-download/?reference=570620461&transAmount=200.00&transRef=C4Ns00tPjf0221gb43ZF&errorMessage=Approved&errorCode=00&currency=NGN&status=0
 
     } catch (e) {
       setLoading(false);
-      setDisabled(false);
+      // setDisabled(false);
       console.log(e);
     }
   };
@@ -649,9 +641,9 @@ const NewPaymentForm = ({ res }) => {
                 <div className="flex items-center  p-4  dark:border-gray-700 border-solid rounded-b space-x-2">
                   <SubmitButton
                     onClick={() => proceedHandler(previewData)}
-                    disabled={disabled}
+                  // disabled={disabled}
                   >
-                    {`${loading ? "Generating..." : "Proceed"} `}
+                    {/* {`${loading ? "Generating..." : "Proceed"} `}
                     <Loader
                       visible={loading}
                       type="ThreeDots"
@@ -660,7 +652,8 @@ const NewPaymentForm = ({ res }) => {
                       width={20}
                       timeout={0}
                       className="ml-2"
-                    />
+                    /> */}
+                    Proceed
                   </SubmitButton>
 
                   <button
