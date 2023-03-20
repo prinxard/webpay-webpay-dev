@@ -40,10 +40,10 @@ const NewPaymentForm = ({ res }) => {
     reValidateMode: "onSubmit"
   });
   const [channel, setChannel] = useState([
-    // { key: "eTransact", value: "eTransact" },
     // { key: "WebPay", value: "Interswitch" },
     // { key: "Remita", value: "Remita" },
     // { key: "Bank Branch", value: "Bank Branch" },
+    { key: "Credo", value: "eTransact" },
     { key: "Monnify", value: "Monnify" },
   ]);
 
@@ -146,7 +146,7 @@ const NewPaymentForm = ({ res }) => {
 
   const submitReturning = (data) => {
     data.phoneNumber = "08131113676"
-    data.channel = "monnify"
+    data.paymentgateway = "MONNIFY"
     function payReturningWithMonnify() {
       MonnifySDK.initialize({
         amount: data.amount,
@@ -169,21 +169,10 @@ const NewPaymentForm = ({ res }) => {
           "CASH",
           "ACCOUNT_TRANSFER",],
         onComplete: function (response) {
-          //Implement what happens when transaction is completed.
-          // alert("Payment Successful!")
           console.log(response);
           window.location = `https://quickpaynewdev.vercel.app/receipt-download/${response.paymentReference}`;
-          // var res_paid = response['amountPaid'];
-          // var res_status = response['paymentStatus'];
-          // var res_ref = response['transactionReference'];
-          // window.location = 'TaxPayDetails?verify=' + payReference;
         },
         onClose: function (data) {
-          // window.location=`${url.PAY_URL}monnify/failure.php?verify=${payReference}`;
-
-          //Implement what should happen when the modal is closed here
-          //	console.log(data);
-          // alert('Payment was not processed');
         }
       });
     }
@@ -199,7 +188,6 @@ const NewPaymentForm = ({ res }) => {
 
   }
 
-  console.log("payInfo?.balance", payInfo);
 
   const proceedHandler = async (data) => {
 
@@ -217,10 +205,8 @@ const NewPaymentForm = ({ res }) => {
     formData.description = data.description;
     formData.paymentRef = globalRef;
     formData.paymentgateway = "MONNIFY"
-    console.log("formData", formData);
-
+    
     const queryParams = new URLSearchParams(formData).toString();
-    console.log("queryParams", queryParams);
 
     function payWithMonnify() {
       MonnifySDK.initialize({
