@@ -48,7 +48,7 @@ const NewPaymentForm = ({ res }) => {
   ]);
 
 
-
+  
   const router = useRouter();
   useEffect(() => {
     let payReference = Math.floor((Math.random() * 1000000000) + 1);
@@ -231,7 +231,7 @@ const NewPaymentForm = ({ res }) => {
           "ACCOUNT_TRANSFER",],
         onComplete: function (response) {
           console.log(response);
-          window.location = `https://quickpaynewdev.vercel.app/receipt-download/${response.paymentReference}`;
+          router.push(`/receipt-download/${response.paymentReference}`);
         },
         onClose: function (data) {
         }
@@ -239,18 +239,20 @@ const NewPaymentForm = ({ res }) => {
     }
 
     function payWithCredo() {
-      credo.initiatePayments({
-        amount: 100,
-        currency: "NGN",
-        redirectUrl: "https://mywebsites.com/callback",
-        transRef: "hytry5",
-        paymentOptions: "CARD,BANK,USSD",
-        customerEmail: "customer@something.com",
-        customerName: "John Doe",
-        customerPhoneNo: "+234 813 000 000"
-      }).then((response) => {
-        console.log(response.body)
-      })
+      const headers = {
+        'Authorization': 'Bearer my-jwt-token',
+        'Content-Type': 'application/json',
+      };
+      let credoBody = {
+        "amount": data.amount,
+        "callbackUrl": router.push(`/receipt-download/${response.reference}`),
+        "email": data.email,
+        "customerFirstName": data.name,
+        "reference": globalRef
+      }
+      let result = axios.post(`https://api.credocentral.com`, credoBody, {
+        headers: headers
+      });
     }
 
     try {
