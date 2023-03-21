@@ -248,7 +248,7 @@ const NewPaymentForm = ({ res }) => {
       let decimal = Number(formAmount)
       let credoBody = {
         "amount": decimal,
-        "callbackUrl": `https://quickpaynewdev.vercel.app/download-receipt`,
+        "callbackUrl": `https://quickpaynewdev.vercel.app/receipt-download`,
         "email": data.email,
         "customerFirstName": data.name,
         "reference": globalRef
