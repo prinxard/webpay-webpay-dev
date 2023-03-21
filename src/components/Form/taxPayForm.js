@@ -170,7 +170,7 @@ const NewPaymentForm = ({ res }) => {
           "ACCOUNT_TRANSFER",],
         onComplete: function (response) {
           console.log(response);
-          window.location = `https://quickpaynewdev.vercel.app/receipt-download/${response.paymentReference}`;
+          window.location = `https://quickpaynewdev.vercel.app/receipt-download?reference=${response.paymentReference}`;
         },
         onClose: function (data) {
         }
@@ -232,7 +232,7 @@ const NewPaymentForm = ({ res }) => {
           "ACCOUNT_TRANSFER",],
         onComplete: function (response) {
           console.log(response);
-          window.location = `https://quickpaynewdev.vercel.app/receipt-download/${response.paymentReference}`;
+          window.location = `https://quickpaynewdev.vercel.app/receipt-download?reference=${response.paymentReference}`;
         },
         onClose: function (data) {
         }
@@ -244,13 +244,16 @@ const NewPaymentForm = ({ res }) => {
         'Authorization': '0PRI0243v9oSOd551Mw506Tsxm3Kqm5c',
         'Content-Type': 'application/json',
       };
+      let formAmount = (Number(data.amount).toFixed(2))
+      let decimal = Number(formAmount)
       let credoBody = {
-        "amount": data.amount,
-        "callbackUrl": `https://quickpaynewdev.vercel.app/receipt-download/`,
+        "amount": decimal,
+        "callbackUrl": `https://quickpaynewdev.vercel.app/download-receipt`,
         "email": data.email,
         "customerFirstName": data.name,
         "reference": globalRef
       }
+      console.log("credoBody", credoBody);
 
       axios.post(`https://api.public.credodemo.com/transaction/initialize`, credoBody, {
         headers: headers
@@ -278,7 +281,7 @@ const NewPaymentForm = ({ res }) => {
       else if (data.paymentgateway.toUpperCase() === "CREDO") {
         payWithCredo()
       }
-      // https://quickpaynewdev.vercel.app/receipt-download/?reference=570620461&transAmount=200.00&transRef=C4Ns00tPjf0221gb43ZF&errorMessage=Approved&errorCode=00&currency=NGN&status=0
+      // https://quickpaynewdev.vercel.app/receipt-download?reference=570620461&transAmount=200.00&transRef=C4Ns00tPjf0221gb43ZF&errorMessage=Approved&errorCode=00&currency=NGN&status=0
 
     } catch (e) {
       setLoading(false);
