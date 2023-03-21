@@ -245,7 +245,7 @@ const NewPaymentForm = ({ res }) => {
         'Content-Type': 'application/json',
       };
       let formAmount = (Number(data.amount).toFixed(2))
-      let decimal = Number(formAmount)
+      let decimal = Number(formAmount) * 100
       let credoBody = {
         "amount": decimal,
         "callbackUrl": `https://quickpaynewdev.vercel.app/receipt-download`,
