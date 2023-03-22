@@ -31,6 +31,9 @@ const NewPaymentForm = ({ res }) => {
   const [disabled, setDisabled] = useState(false);
   const [pdfMessage, setPdfMessage] = useState(null);
   const [previewData, setPreviewData] = useState({});
+  const [modalUrl, setModalUrl] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const { register, handleSubmit, errors } = useForm({
     mode: "onChange",
     reValidateMode: "onChange",
@@ -48,6 +51,56 @@ const NewPaymentForm = ({ res }) => {
   ]);
 
 
+  const Modal = ({ isOpen, onClose, url }) => {
+    const handleClose = () => {
+      onClose();
+    };
+
+    return (
+      <>
+        {isOpen && (
+          <div className="fixed z-50 top-0 left-0 right-0 bottom-0 flex items-center justify-center">
+            <div className="absolute top-0 left-0 right-0 bottom-0 bg-black opacity-50"></div>
+            <div className="relative z-50 w-2/3 lg:h-4/5 bg-white p-4 rounded-lg shadow-lg">
+              <iframe
+                src={url}
+                frameBorder="0"
+                className="w-full h-full"
+              ></iframe>
+              <button
+                className="absolute top-0 right-0 m-4 text-gray-500 hover:text-gray-800"
+                onClick={handleClose}
+              >
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
+      </>
+    );
+  };
+
+  const handleModalOpen = (url) => {
+    setIsModalOpen(true);
+    setModalUrl(url);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setModalUrl("");
+  };
 
   const router = useRouter();
   useEffect(() => {
@@ -145,8 +198,6 @@ const NewPaymentForm = ({ res }) => {
   };
 
   const submitReturning = (data) => {
-    data.phoneNumber = "08131113676"
-    data.paymentgateway = "MONNIFY"
     function payReturningWithMonnify() {
       MonnifySDK.initialize({
         amount: data.amount,
@@ -176,13 +227,43 @@ const NewPaymentForm = ({ res }) => {
         }
       });
     }
+    const payReturningWithCredo = () => {
+      const headers = {
+        'Authorization': '0PRI0243v9oSOd551Mw506Tsxm3Kqm5c',
+        'Content-Type': 'application/json',
+      };
+      let formAmount = (Number(data.amount).toFixed(2))
+      let decimal = Number(formAmount) * 100
+      let credoBody = {
+        "amount": decimal,
+        "callbackUrl": `https://quickpaynewdev.vercel.app/receipt-download`,
+        "email": data.email,
+        "customerFirstName": data.name,
+        "reference": globalRef
+      }
+      console.log("credoBody", credoBody);
+
+      axios.post(`https://api.public.credodemo.com/transaction/initialize`, credoBody, {
+        headers: headers
+      }).then(function (response) {
+        handleModalOpen(response.data.data.authorizationUrl)
+
+      }).catch(function (err) {
+        console.log(err);
+      })
+
+    }
+
     const queryParams = new URLSearchParams(data).toString();
     try {
       let result = axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/recordpayment.php?${queryParams}`);
-      console.log("result", result);
-      payReturningWithMonnify()
+      if (data.paymentgateway.toUpperCase() === "MONNIFY") {
+        payReturningWithMonnify()
+      }
+      if (data.paymentgateway.toUpperCase() === "CREDO") {
+        payReturningWithCredo()
+      }
     } catch (e) {
-
       console.log(e);
     }
 
@@ -258,7 +339,8 @@ const NewPaymentForm = ({ res }) => {
       axios.post(`https://api.public.credodemo.com/transaction/initialize`, credoBody, {
         headers: headers
       }).then(function (response) {
-        window.location = response.data.data.authorizationUrl
+        // window.location = response.data.data.authorizationUrl
+        handleModalOpen(response.data.data.authorizationUrl)
 
       }).catch(function (err) {
         console.log(err);
@@ -281,7 +363,6 @@ const NewPaymentForm = ({ res }) => {
       else if (data.paymentgateway.toUpperCase() === "CREDO") {
         payWithCredo()
       }
-      // https://quickpaynewdev.vercel.app/receipt-download?reference=570620461&transAmount=200.00&transRef=C4Ns00tPjf0221gb43ZF&errorMessage=Approved&errorCode=00&currency=NGN&status=0
 
     } catch (e) {
       setLoading(false);
@@ -703,7 +784,6 @@ const NewPaymentForm = ({ res }) => {
                   </div>
                 </div>
                 <div>
-
                   <form className="p-4 text-sm" onSubmit={handleSubmitForm2(submitReturning)}>
                     {payInfo?.balance == "0" ?
                       <p className="text-green-600 bg-white text-center">
@@ -808,15 +888,19 @@ const NewPaymentForm = ({ res }) => {
                           </div>
                         </div>
                         <div className="flex flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
-                          <div className="">
-                            <NewFormInput
-                              label="Channel"
-                              required
-                              ref={registerForm2()}
-                              name="paymentgateway"
-                              value={payInfo?.paymentgateway || ""}
-                            />
-                          </div>
+                          <select
+                            required
+                            name="paymentgateway"
+                            ref={registerForm2()}
+                            className="focus:outline-none focus:ring-0 focus:ring-offset-0  border-transparent bg-transparent text-gray-600 text-md border-none"
+                          >
+                            <option value="">Channel</option>
+                            {channel.map((channel) => (
+                              <option value={channel.key} key={channel.key}>
+                                {channel.value}
+                              </option>
+                            ))}
+                          </select>
                         </div>
                         <div className="flex hidden flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
                           <div className="">
@@ -882,8 +966,13 @@ const NewPaymentForm = ({ res }) => {
               </div>
             </div>
           </div>
+
         </>
       )}
+      <button onClick={() => handleModalOpen("https://www.example.com")}>
+        Open Modal
+      </button>
+      <Modal isOpen={isModalOpen} onClose={handleModalClose} url={modalUrl} />
     </>
   );
 };
