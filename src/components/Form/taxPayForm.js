@@ -887,7 +887,7 @@ const NewPaymentForm = ({ res }) => {
                             />
                           </div>
                         </div>
-                        <div className="flex flex-col lg:flex-row lg:flex-wrap w-full lg:space-x-4">
+                        <div className="">
                           <select
                             required
                             name="paymentgateway"
