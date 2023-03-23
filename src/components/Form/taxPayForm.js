@@ -285,6 +285,7 @@ const NewPaymentForm = ({ res }) => {
     formData.paymentgateway = data.paymentgateway
     formData.callback = `https://quickpaynewdev.vercel.app/receipt-download?reference=${globalRef}`
 
+
     const queryParams = new URLSearchParams(formData).toString();
 
     function payWithMonnify() {
@@ -349,7 +350,6 @@ const NewPaymentForm = ({ res }) => {
 
       let result = axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/recordpayment.php?${queryParams}`);
       handleModalOpen(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/processpayment.php?paymentref=${globalRef}`)
-      // handleModalOpen(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/processpayment.php?paymentref=${globalRef}&cb=https://quickpaynewdev.vercel.app/receipt-download?reference=${globalRef}`)
 
       // if (data.paymentgateway === "Bank Branch") {
       //   await fetchBankPrint(assessmentId, taxId);
