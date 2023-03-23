@@ -61,7 +61,7 @@ const NewPaymentForm = ({ res }) => {
         {isOpen && (
           <div className="fixed z-50 top-0 left-0 right-0 bottom-0 flex items-center justify-center">
             <div className="absolute top-0 left-0 right-0 bottom-0 bg-black opacity-50"></div>
-            <div className="relative z-50 w-ful lg:h-full bg-white p-4 rounded-lg shadow-lg">
+            <div className="relative z-50 w-full lg:h-full bg-white p-4 rounded-lg shadow-lg">
               <iframe
                 src={url}
                 frameBorder="0"
