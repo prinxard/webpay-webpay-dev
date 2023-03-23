@@ -4,7 +4,6 @@ import SectionTitle from "../section-title";
 import Widget from "../widget";
 import { NewFormInput } from "../FormInput/formInputs";
 import axios from "axios";
-import Loader from "react-loader-spinner";
 import { SubmitButton } from "../CustomButton/CustomButton";
 import url from "../../config/url";
 import { useRouter } from "next/router";
@@ -15,7 +14,6 @@ import { saveAs } from "file-saver";
 import { taxStation } from "../../json/taxOffice";
 import UseFetcher from "../fetcher/useFetcher";
 import Link from "next/dist/client/link";
-
 
 
 const NewPaymentForm = ({ res }) => {
@@ -38,15 +36,17 @@ const NewPaymentForm = ({ res }) => {
     mode: "onChange",
     reValidateMode: "onChange",
   });
-  const { register: registerForm2, handleSubmit: handleSubmitForm2, formState: { errors: errorsForm2 }, mode: modeForm2, reValidateMode: reValidateModeForm2 } = useForm({
+  const { register: registerForm2,
+    handleSubmit: handleSubmitForm2,
+    formState: { errors: errorsForm2 },
+    mode: modeForm2,
+    reValidateMode: reValidateModeForm2
+  } = useForm({
     mode: "onBlur",
     reValidateMode: "onSubmit"
   });
   const [channel, setChannel] = useState([
-    // { key: "WebPay", value: "Interswitch" },
-    // { key: "Remita", value: "Remita" },
-    // { key: "Bank Branch", value: "Bank Branch" },
-    { key: "Credo", value: "eTransact" },
+    { key: "Credo", value: "Credo" },
     { key: "Monnify", value: "Monnify" },
   ]);
 
@@ -71,7 +71,7 @@ const NewPaymentForm = ({ res }) => {
                 className="absolute top-0 right-0 m-4 text-gray-500 hover:text-gray-800"
                 onClick={handleClose}
               >
-                <svg
+                {/* <svg
                   className="h-6 w-6"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -83,7 +83,7 @@ const NewPaymentForm = ({ res }) => {
                     strokeWidth={2}
                     d="M6 18L18 6M6 6l12 12"
                   />
-                </svg>
+                </svg> */}
               </button>
             </div>
           </div>
@@ -109,7 +109,6 @@ const NewPaymentForm = ({ res }) => {
   }, []);
 
 
-
   const filter = (val) => {
     setRevitems(data.res.filter((re) => val === re.rev_code.split("/")[0]));
     let da = val;
@@ -125,6 +124,7 @@ const NewPaymentForm = ({ res }) => {
       ]);
     }
   };
+
 
   const taxIdFetcher = async (e) => {
     let id = e.target.value;
@@ -154,7 +154,7 @@ const NewPaymentForm = ({ res }) => {
 
   const returningPaymentInfo = async (e) => {
     let id = e.target.value;
-    if (id.length === 12 && !errors.hasOwnProperty("assessment_id")) {
+    if (id.length === 13 && !errors.hasOwnProperty("assessment_id")) {
       setIsFetchingUserInfo(true);
       try {
         let result = await axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/findpartpayment.php?assessment=${id}`);
@@ -241,7 +241,6 @@ const NewPaymentForm = ({ res }) => {
         "customerFirstName": data.name,
         "reference": globalRef
       }
-      console.log("credoBody", credoBody);
 
       axios.post(`https://api.public.credodemo.com/transaction/initialize`, credoBody, {
         headers: headers
@@ -253,7 +252,6 @@ const NewPaymentForm = ({ res }) => {
       })
 
     }
-
     const queryParams = new URLSearchParams(data).toString();
     try {
       let result = axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/recordpayment.php?${queryParams}`);
@@ -272,7 +270,6 @@ const NewPaymentForm = ({ res }) => {
 
   const proceedHandler = async (data) => {
 
-
     let formData = {};
     formData.name = data.name;
     formData.email = data.email;
@@ -286,7 +283,6 @@ const NewPaymentForm = ({ res }) => {
     formData.description = data.description;
     formData.paymentRef = globalRef;
     formData.paymentgateway = data.paymentgateway
-
 
     const queryParams = new URLSearchParams(formData).toString();
 
@@ -334,12 +330,10 @@ const NewPaymentForm = ({ res }) => {
         "customerFirstName": data.name,
         "reference": globalRef
       }
-      console.log("credoBody", credoBody);
 
       axios.post(`https://api.public.credodemo.com/transaction/initialize`, credoBody, {
         headers: headers
       }).then(function (response) {
-        // window.location = response.data.data.authorizationUrl
         handleModalOpen(response.data.data.authorizationUrl)
 
       }).catch(function (err) {
@@ -353,16 +347,17 @@ const NewPaymentForm = ({ res }) => {
       // setDisabled(true);
 
       let result = axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/recordpayment.php?${queryParams}`);
+      handleModalOpen(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/processpayment.php?paymentref=${globalRef}`)
 
-      if (data.paymentgateway === "Bank Branch") {
-        await fetchBankPrint(assessmentId, taxId);
-      }
-      else if (data.paymentgateway.toUpperCase() === "MONNIFY") {
-        payWithMonnify()
-      }
-      else if (data.paymentgateway.toUpperCase() === "CREDO") {
-        payWithCredo()
-      }
+      // if (data.paymentgateway === "Bank Branch") {
+      //   await fetchBankPrint(assessmentId, taxId);
+      // }
+      // else if (data.paymentgateway.toUpperCase() === "MONNIFY") {
+      //   payWithMonnify()
+      // }
+      // else if (data.paymentgateway.toUpperCase() === "CREDO") {
+      //   payWithCredo()
+      // }
 
     } catch (e) {
       setLoading(false);
@@ -404,7 +399,6 @@ const NewPaymentForm = ({ res }) => {
   return (
     <>
       {isFetchingUserInfo && <ProcessorSpinner />}
-
       <div className="flex ">
         <SectionTitle title="Etax" subtitle="Tax Payment" />
         <section className="w-64 bg-green-600 text-white grid justify-items-center rounded">
@@ -883,7 +877,7 @@ const NewPaymentForm = ({ res }) => {
                               required
                               ref={registerForm2()}
                               name="email"
-                              value={payInfo?.acc_no || ""}
+                              defaultValue={payInfo?.acc_no || ""}
                             />
                           </div>
                         </div>
@@ -969,9 +963,6 @@ const NewPaymentForm = ({ res }) => {
 
         </>
       )}
-      <button onClick={() => handleModalOpen("https://www.example.com")}>
-        Open Modal
-      </button>
       <Modal isOpen={isModalOpen} onClose={handleModalClose} url={modalUrl} />
     </>
   );
