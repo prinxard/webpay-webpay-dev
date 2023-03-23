@@ -61,7 +61,7 @@ const NewPaymentForm = ({ res }) => {
         {isOpen && (
           <div className="fixed z-50 top-0 left-0 right-0 bottom-0 flex items-center justify-center">
             <div className="absolute top-0 left-0 right-0 bottom-0 bg-black opacity-50"></div>
-            <div className="relative z-50 w-2/3 lg:h-4/5 bg-white p-4 rounded-lg shadow-lg">
+            <div className="relative z-50 w-3/4 lg:h-3/4 bg-white p-4 rounded-lg shadow-lg">
               <iframe
                 src={url}
                 frameBorder="0"
@@ -283,6 +283,7 @@ const NewPaymentForm = ({ res }) => {
     formData.description = data.description;
     formData.paymentRef = globalRef;
     formData.paymentgateway = data.paymentgateway
+    formData.callback = `https://quickpaynewdev.vercel.app/receipt-download?reference=${globalRef}`
 
     const queryParams = new URLSearchParams(formData).toString();
 
@@ -347,8 +348,8 @@ const NewPaymentForm = ({ res }) => {
       // setDisabled(true);
 
       let result = axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/recordpayment.php?${queryParams}`);
-      // handleModalOpen(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/processpayment.php?paymentref=${globalRef}`)
-      handleModalOpen(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/processpayment.php?paymentref=${globalRef}&cb=https://quickpaynewdev.vercel.app/receipt-download?reference=${globalRef}`)
+      handleModalOpen(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/processpayment.php?paymentref=${globalRef}`)
+      // handleModalOpen(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/processpayment.php?paymentref=${globalRef}&cb=https://quickpaynewdev.vercel.app/receipt-download?reference=${globalRef}`)
 
       // if (data.paymentgateway === "Bank Branch") {
       //   await fetchBankPrint(assessmentId, taxId);
