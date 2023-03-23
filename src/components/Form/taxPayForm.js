@@ -285,7 +285,6 @@ const NewPaymentForm = ({ res }) => {
     formData.paymentgateway = data.paymentgateway
     formData.callback = `https://quickpaynewdev.vercel.app/receipt-download?reference=${globalRef}`
 
-
     const queryParams = new URLSearchParams(formData).toString();
 
     function payWithMonnify() {
