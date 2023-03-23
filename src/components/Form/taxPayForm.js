@@ -282,9 +282,9 @@ const NewPaymentForm = ({ res }) => {
     formData.agency = data.mda;
     formData.description = data.description;
     formData.paymentRef = globalRef;
-    formData.paymentgateway = data.paymentgateway
+    formData.paymentgateway = data.paymentgateway;
+    formData.callback = "client1";
     // formData.callback = `https://quickpaynewdev.vercel.app/receipt-download?reference=${globalRef}`
-    formData.callback = "client1"
 
     const queryParams = new URLSearchParams(formData).toString();
 
