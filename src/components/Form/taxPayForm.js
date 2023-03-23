@@ -61,17 +61,17 @@ const NewPaymentForm = ({ res }) => {
         {isOpen && (
           <div className="fixed z-50 top-0 left-0 right-0 bottom-0 flex items-center justify-center">
             <div className="absolute top-0 left-0 right-0 bottom-0 bg-black opacity-50"></div>
-            <div className="relative z-50 w-full lg:h-full bg-white p-4 rounded-lg shadow-lg">
+            <div className="relative z-50 w-2/3 h-full bg-white p-4 rounded-lg shadow-lg">
               <iframe
                 src={url}
-                frameBorder="0"
-                className="w-full h-full"
+                allowFullScreen
+                className="w-full h-full lg:h-100vw border-0"
               ></iframe>
               <button
                 className="absolute top-0 right-0 m-4 text-gray-500 hover:text-gray-800"
                 onClick={handleClose}
               >
-                {/* <svg
+                <svg
                   className="h-6 w-6"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -83,7 +83,7 @@ const NewPaymentForm = ({ res }) => {
                     strokeWidth={2}
                     d="M6 18L18 6M6 6l12 12"
                   />
-                </svg> */}
+                </svg>
               </button>
             </div>
           </div>
@@ -283,8 +283,7 @@ const NewPaymentForm = ({ res }) => {
     formData.description = data.description;
     formData.paymentRef = globalRef;
     formData.paymentgateway = data.paymentgateway;
-    formData.callback = "client1";
-    // formData.callback = `https://quickpaynewdev.vercel.app/receipt-download?reference=${globalRef}`
+    formData.paygatewayclient = "client1";
 
     const queryParams = new URLSearchParams(formData).toString();
 
@@ -400,6 +399,8 @@ const NewPaymentForm = ({ res }) => {
 
   return (
     <>
+      <Modal isOpen={isModalOpen} onClose={handleModalClose} url={modalUrl} />
+
       {isFetchingUserInfo && <ProcessorSpinner />}
       <div className="flex ">
         <SectionTitle title="Etax" subtitle="Tax Payment" />
@@ -965,7 +966,13 @@ const NewPaymentForm = ({ res }) => {
 
         </>
       )}
-      <Modal isOpen={isModalOpen} onClose={handleModalClose} url={modalUrl} />
+      {/* <Modal isOpen={isModalOpen} onClose={handleModalClose} url={modalUrl} /> */}
+      <button
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        onClick={handleModalOpen}
+      >
+        Open Modal
+      </button>
     </>
   );
 };
