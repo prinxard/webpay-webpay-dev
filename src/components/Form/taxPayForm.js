@@ -89,7 +89,6 @@ const NewPaymentForm = ({ res }) => {
           // </div>
           <div className="fixed z-50 top-0 left-0 right-0 bottom-0 flex items-center justify-center">
             <iframe src={url} className="w-full h-full lg:h-100vw border-0"></iframe>
-
           </div>
 
         )}
@@ -288,65 +287,9 @@ const NewPaymentForm = ({ res }) => {
     formData.description = data.description;
     formData.paymentRef = globalRef;
     formData.paymentgateway = data.paymentgateway;
-    formData.paygatewayclient = "client1";
+    formData.paygatewayclient = "quickpay";
 
     const queryParams = new URLSearchParams(formData).toString();
-
-    function payWithMonnify() {
-      MonnifySDK.initialize({
-        amount: data.amount,
-        currency: "NGN",
-        reference: globalRef,
-        customerName: data.name,
-        customerEmail: data.email,
-        apiKey: "MK_TEST_3NP2GGZBRN",
-        contractCode: "5214854348",
-        paymentDescription: data.description,
-        isTestMode: true,
-        metadata: {
-          "name": "Damilare",
-          "age": 45
-        },
-        paymentMethods: ["CARD",
-          "USSD",
-          "PHONE_NUMBER",
-          "DIRECT_DEBIT",
-          "CASH",
-          "ACCOUNT_TRANSFER",],
-        onComplete: function (response) {
-          console.log(response);
-          window.location = `https://quickpaynewdev.vercel.app/receipt-download?reference=${response.paymentReference}`;
-        },
-        onClose: function (data) {
-        }
-      });
-    }
-
-    const payWithCredo = () => {
-      const headers = {
-        'Authorization': '0PRI0243v9oSOd551Mw506Tsxm3Kqm5c',
-        'Content-Type': 'application/json',
-      };
-      let formAmount = (Number(data.amount).toFixed(2))
-      let decimal = Number(formAmount) * 100
-      let credoBody = {
-        "amount": decimal,
-        "callbackUrl": `https://quickpaynewdev.vercel.app/receipt-download`,
-        "email": data.email,
-        "customerFirstName": data.name,
-        "reference": globalRef
-      }
-
-      axios.post(`https://api.public.credodemo.com/transaction/initialize`, credoBody, {
-        headers: headers
-      }).then(function (response) {
-        handleModalOpen(response.data.data.authorizationUrl)
-
-      }).catch(function (err) {
-        console.log(err);
-      })
-
-    }
 
     try {
       setLoading(true);
@@ -354,6 +297,7 @@ const NewPaymentForm = ({ res }) => {
 
       let result = await axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/recordpayment.php?${queryParams}`);
       handleModalOpen(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/processpayment.php?paymentref=${globalRef}`)
+      // handleModalOpen(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/processpayment.php?paymentref=${globalRef}`)
 
       // if (data.paymentgateway === "Bank Branch") {
       //   await fetchBankPrint(assessmentId, taxId);
