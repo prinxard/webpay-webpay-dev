@@ -88,7 +88,7 @@ const NewPaymentForm = ({ res }) => {
           //   </div>
           // </div>
           <div className="fixed z-50 top-0 left-0 right-0 bottom-0 flex items-center justify-center">
-            <iframe src={url} style={{ width: '100%', height: '100vh', border: 'none' }}></iframe>
+            <iframe src={url} className="w-full h-full lg:h-100vw border-0"></iframe>
 
           </div>
 
