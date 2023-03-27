@@ -180,21 +180,6 @@ const NewPaymentForm = ({ res }) => {
     data.phoneNumber = "0708 811 7808"
     data.channel = data.paymentgateway;
 
-    console.log("returning data", data);
-    // formData.name = data.name;
-    // formData.email = data.email;
-    // formData.phoneNumber = data.phoneNumber;
-    // formData.station = data.station;
-    // formData.amount = data.amount;
-    // formData.channel = data.paymentgateway;
-    // formData.KGTIN = data.KGTIN;
-    // formData.revenueSub = data.revenueItem;
-    // formData.agency = data.mda;
-    // formData.description = data.description;
-    // formData.paymentRef = globalRef;
-    // formData.paymentgateway = data.paymentgateway;
-    // formData.paygatewayclient = "quickpay";
-
     const queryParams = new URLSearchParams(data).toString();
     try {
       let result = axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/recordpayment.php?${queryParams}`);
