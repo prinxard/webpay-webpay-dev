@@ -59,34 +59,7 @@ const NewPaymentForm = ({ res }) => {
     return (
       <>
         {isOpen && (
-          // <div className="fixed z-50 top-0 left-0 right-0 bottom-0 flex items-center justify-center">
-          //   <div className="absolute top-0 left-0 right-0 bottom-0 bg-black opacity-50"></div>
-          //   <div className="relative z-50 w-2/3 h-full bg-white p-4 rounded-lg shadow-lg">
-          //     <iframe
-          //       src={url}
-          //       allowFullScreen
-          //       className="w-full h-full lg:h-100vw border-0"
-          //     ></iframe>
-          //     <button
-          //       className="absolute top-0 right-0 m-4 text-gray-500 hover:text-gray-800"
-          //       onClick={handleClose}
-          //     >
-          //       <svg
-          //         className="h-6 w-6"
-          //         fill="none"
-          //         viewBox="0 0 24 24"
-          //         stroke="currentColor"
-          //       >
-          //         <path
-          //           strokeLinecap="round"
-          //           strokeLinejoin="round"
-          //           strokeWidth={2}
-          //           d="M6 18L18 6M6 6l12 12"
-          //         />
-          //       </svg>
-          //     </button>
-          //   </div>
-          // </div>
+
           <div className="fixed z-50 top-0 left-0 right-0 bottom-0 flex items-center justify-center">
             <iframe src={url} className="w-full h-full lg:h-100vw border-0"></iframe>
           </div>
@@ -138,6 +111,7 @@ const NewPaymentForm = ({ res }) => {
         let result = await axios.post(`${url.BASE_URL}web/user-info`, {
           kgtin: id,
         });
+        console.log("result", result);
         setUserInfo(() => result.data.body);
         setIsFetchingUserInfo(false);
       } catch (e) {
@@ -158,7 +132,7 @@ const NewPaymentForm = ({ res }) => {
 
   const returningPaymentInfo = async (e) => {
     let id = e.target.value;
-    if (id.length === 13 && !errors.hasOwnProperty("assessment_id")) {
+    if (id.length === 12 && !errors.hasOwnProperty("assessment_id")) {
       setIsFetchingUserInfo(true);
       try {
         let result = await axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/findpartpayment.php?assessment=${id}`);
@@ -202,69 +176,29 @@ const NewPaymentForm = ({ res }) => {
   };
 
   const submitReturning = (data) => {
-    function payReturningWithMonnify() {
-      MonnifySDK.initialize({
-        amount: data.amount,
-        currency: "NGN",
-        reference: globalRef,
-        customerName: data.name,
-        customerEmail: data.email,
-        apiKey: "MK_TEST_3NP2GGZBRN",
-        contractCode: "5214854348",
-        paymentDescription: data.description,
-        isTestMode: true,
-        metadata: {
-          "name": "Damilare",
-          "age": 45
-        },
-        paymentMethods: ["CARD",
-          "USSD",
-          "PHONE_NUMBER",
-          "DIRECT_DEBIT",
-          "CASH",
-          "ACCOUNT_TRANSFER",],
-        onComplete: function (response) {
-          console.log(response);
-          window.location = `https://quickpaynewdev.vercel.app/receipt-download?reference=${response.paymentReference}`;
-        },
-        onClose: function (data) {
-        }
-      });
-    }
-    const payReturningWithCredo = () => {
-      const headers = {
-        'Authorization': '0PRI0243v9oSOd551Mw506Tsxm3Kqm5c',
-        'Content-Type': 'application/json',
-      };
-      let formAmount = (Number(data.amount).toFixed(2))
-      let decimal = Number(formAmount) * 100
-      let credoBody = {
-        "amount": decimal,
-        "callbackUrl": `https://quickpaynewdev.vercel.app/receipt-download`,
-        "email": data.email,
-        "customerFirstName": data.name,
-        "reference": globalRef
-      }
+    data.paygatewayclient = "quickpay";
+    data.phoneNumber = "0708 811 7808"
+    data.channel = data.paymentgateway;
 
-      axios.post(`https://api.public.credodemo.com/transaction/initialize`, credoBody, {
-        headers: headers
-      }).then(function (response) {
-        handleModalOpen(response.data.data.authorizationUrl)
+    console.log("returning data", data);
+    // formData.name = data.name;
+    // formData.email = data.email;
+    // formData.phoneNumber = data.phoneNumber;
+    // formData.station = data.station;
+    // formData.amount = data.amount;
+    // formData.channel = data.paymentgateway;
+    // formData.KGTIN = data.KGTIN;
+    // formData.revenueSub = data.revenueItem;
+    // formData.agency = data.mda;
+    // formData.description = data.description;
+    // formData.paymentRef = globalRef;
+    // formData.paymentgateway = data.paymentgateway;
+    // formData.paygatewayclient = "quickpay";
 
-      }).catch(function (err) {
-        console.log(err);
-      })
-
-    }
     const queryParams = new URLSearchParams(data).toString();
     try {
       let result = axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/recordpayment.php?${queryParams}`);
-      if (data.paymentgateway.toUpperCase() === "MONNIFY") {
-        payReturningWithMonnify()
-      }
-      if (data.paymentgateway.toUpperCase() === "CREDO") {
-        payReturningWithCredo()
-      }
+      handleModalOpen(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/processpayment.php?paymentref=${globalRef}`)
     } catch (e) {
       console.log(e);
     }
@@ -297,7 +231,6 @@ const NewPaymentForm = ({ res }) => {
 
       let result = await axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/recordpayment.php?${queryParams}`);
       handleModalOpen(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/processpayment.php?paymentref=${globalRef}`)
-      // handleModalOpen(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/processpayment.php?paymentref=${globalRef}`)
 
       // if (data.paymentgateway === "Bank Branch") {
       //   await fetchBankPrint(assessmentId, taxId);
@@ -732,7 +665,7 @@ const NewPaymentForm = ({ res }) => {
                 </div>
                 <div>
                   <form className="p-4 text-sm" onSubmit={handleSubmitForm2(submitReturning)}>
-                    {payInfo?.balance == "0" ?
+                    {Number(payInfo?.balance) === 0 ?
                       <p className="text-green-600 bg-white text-center">
                         Payment Completed!
                       </p>
