@@ -217,8 +217,8 @@ const NewPaymentForm = ({ res }) => {
       setLoading(true);
       // setDisabled(true);
 
-      // let result = await axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/recordpayment.php?${queryParams}`);
-      // handleModalOpen(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/processpayment.php?paymentref=${globalRef}`)
+      let result = await axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/recordpayment.php?${queryParams}`);
+      handleModalOpen(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/processpayment.php?paymentref=${globalRef}`)
 
       // if (data.paymentgateway === "Bank Branch") {
       //   await fetchBankPrint(assessmentId, taxId);
