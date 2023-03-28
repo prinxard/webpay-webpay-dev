@@ -48,6 +48,7 @@ const NewPaymentForm = ({ res }) => {
   const [channel, setChannel] = useState([
     { key: "Credo", value: "Credo" },
     { key: "Monnify", value: "Monnify" },
+    { key: "Monnify offline", value: "Offline" },
   ]);
 
 
@@ -210,12 +211,14 @@ const NewPaymentForm = ({ res }) => {
 
     const queryParams = new URLSearchParams(formData).toString();
 
+    console.log("form data", formData);
+
     try {
       setLoading(true);
       // setDisabled(true);
 
-      let result = await axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/recordpayment.php?${queryParams}`);
-      handleModalOpen(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/processpayment.php?paymentref=${globalRef}`)
+      // let result = await axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/recordpayment.php?${queryParams}`);
+      // handleModalOpen(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/processpayment.php?paymentref=${globalRef}`)
 
       // if (data.paymentgateway === "Bank Branch") {
       //   await fetchBankPrint(assessmentId, taxId);
@@ -503,8 +506,8 @@ const NewPaymentForm = ({ res }) => {
               >
                 <option value="">Select Payment Channel</option>
                 {channel.map((channel) => (
-                  <option value={channel.key} key={channel.key}>
-                    {channel.value}
+                  <option value={channel.value} key={channel.key}>
+                    {channel.key}
                   </option>
                 ))}
               </select>
