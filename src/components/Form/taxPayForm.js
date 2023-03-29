@@ -17,7 +17,11 @@ import Link from "next/dist/client/link";
 
 
 const NewPaymentForm = ({ res }) => {
-  const { data } = UseFetcher(`${url.BASE_URL}web/get-mdas-items`, res);
+  //   const { datas } = UseFetcher(`${url.BASE_URL}web/get-mdas-items`, res);
+  // console.log("old mda data", datas);
+  const { data } = UseFetcher(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/get-mdas-items.php`, res);
+  console.log("mda data ", data);
+
   const [revItems, setRevitems] = useState([]);
   const [userInfo, setUserInfo] = useState(() => { });
   const [payInfo, setPayInfo] = useState(() => { });
@@ -32,6 +36,7 @@ const NewPaymentForm = ({ res }) => {
   const [modalUrl, setModalUrl] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  console.log("previewData", previewData);
   const { register, handleSubmit, errors } = useForm({
     mode: "onChange",
     reValidateMode: "onChange",
@@ -113,7 +118,6 @@ const NewPaymentForm = ({ res }) => {
         let result = await axios.post(`${url.BASE_URL}web/user-info`, {
           kgtin: id,
         });
-        console.log("result", result);
         setUserInfo(() => result.data.body);
         setIsFetchingUserInfo(false);
       } catch (e) {
@@ -134,7 +138,7 @@ const NewPaymentForm = ({ res }) => {
 
   const returningPaymentInfo = async (e) => {
     let id = e.target.value;
-    if (id.length === 12 && !errors.hasOwnProperty("assessment_id")) {
+    if (id.length === 13 && !errors.hasOwnProperty("assessment_id")) {
       setIsFetchingUserInfo(true);
       try {
         let result = await axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/findpartpayment.php?assessment=${id}`);
@@ -216,7 +220,6 @@ const NewPaymentForm = ({ res }) => {
 
     try {
       setLoading(true);
-      // setDisabled(true);
 
       let result = await axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/recordpayment.php?${queryParams}`);
       handleModalOpen(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/processpayment.php?paymentref=${globalRef}`)
@@ -752,7 +755,7 @@ const NewPaymentForm = ({ res }) => {
                               required
                               ref={registerForm2()}
                               name="email"
-                              defaultValue={payInfo?.acc_no || ""}
+                              defaultValue={payInfo?.acc_no || "info@bespoque.ng"}
                             />
                           </div>
                         </div>
