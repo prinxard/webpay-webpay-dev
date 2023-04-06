@@ -88,8 +88,11 @@ const NewPaymentForm = ({ res }) => {
 
   const router = useRouter();
   useEffect(() => {
-    let payReference = Math.floor((Math.random() * 1000000000) + 1);
-    setGlobalRef(String(payReference))
+    const date = new Date();
+    const timestamp = date.getTime().toString();
+    const parsedTimestamp = parseInt(timestamp).toString().substring(0, 10);
+    const result = parsedTimestamp;
+    setGlobalRef(result)
   }, []);
 
 
