@@ -115,7 +115,10 @@ const NewPaymentForm = ({ res }) => {
     if (id.length === 10 && !errors.hasOwnProperty("KGTIN")) {
       setIsFetchingUserInfo(true);
       try {
-        let result = await axios.post(`${url.BASE_URL}web/user-info`, {
+        // let result = await axios.post(`${url.BASE_URL}web/user-info`, {
+        //   kgtin: id,
+        // });
+        let result = await axios.get(`$https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/getuser.php?taxpayerid=${id}`, {
           kgtin: id,
         });
         setUserInfo(() => result.data.body);
