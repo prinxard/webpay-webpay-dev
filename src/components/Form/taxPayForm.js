@@ -54,7 +54,7 @@ const NewPaymentForm = ({ res }) => {
     { key: "Credo", value: "Credo" },
     { key: "Monnify", value: "Monnify" },
     // { key: "Remita", value: "Remita" },
-    { key: "Moniepoint POS", value: "Moniepoint POS" },
+    // { key: "Moniepoint POS", value: "Moniepoint POS" },
   ]);
 
 
