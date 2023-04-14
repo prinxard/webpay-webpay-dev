@@ -17,11 +17,8 @@ import Link from "next/dist/client/link";
 
 
 const NewPaymentForm = ({ res }) => {
-  //   const { datas } = UseFetcher(`${url.BASE_URL}web/get-mdas-items`, res);
-  // console.log("old mda data", datas);
-  const { data } = UseFetcher(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/get-mdas-items.php`, res);
-  console.log("mda data ", data);
-
+  const { data } = UseFetcher(`${url.BASE_URL}get-mdas-items.php`, res);
+ 
   const [revItems, setRevitems] = useState([]);
   const [userInfo, setUserInfo] = useState(() => { });
   const [payInfo, setPayInfo] = useState(() => { });
@@ -58,10 +55,8 @@ const NewPaymentForm = ({ res }) => {
   ]);
 
 
-  const Modal = ({ isOpen, onClose, url }) => {
-    const handleClose = () => {
-      onClose();
-    };
+  const Modal = ({ isOpen, url }) => {
+ 
 
     return (
       <>
@@ -121,7 +116,7 @@ const NewPaymentForm = ({ res }) => {
         // let result = await axios.post(`${url.BASE_URL}web/user-info`, {
         //   kgtin: id,
         // });
-        let result = await axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/getuser.php?taxpayerid=${id}`);
+        let result = await axios.get(`${url.BASE_URL}getuser.php?taxpayerid=${id}`);
         setUserInfo(() => result.data.body);
         setIsFetchingUserInfo(false);
       } catch (e) {
@@ -145,7 +140,7 @@ const NewPaymentForm = ({ res }) => {
     if (id.length === 13 && !errors.hasOwnProperty("assessment_id")) {
       setIsFetchingUserInfo(true);
       try {
-        let result = await axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/findpartpayment.php?assessment=${id}`);
+        let result = await axios.get(`${url.BASE_URL}findpartpayment.php?assessment=${id}`);
         setPayInfo(() => result.data.body);
         setIsFetchingUserInfo(false);
       } catch (e) {
@@ -192,8 +187,8 @@ const NewPaymentForm = ({ res }) => {
 
     const queryParams = new URLSearchParams(data).toString();
     try {
-      let result = axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/recordpayment.php?${queryParams}`);
-      handleModalOpen(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/processpayment.php?paymentref=${globalRef}`)
+      let result = axios.get(`${url.BASE_URL}recordpayment.php?${queryParams}`);
+      handleModalOpen(`${url.BASE_URL}processpayment.php?paymentref=${globalRef}`)
     } catch (e) {
       console.log(e);
     }
@@ -225,8 +220,8 @@ const NewPaymentForm = ({ res }) => {
     try {
       setLoading(true);
 
-      let result = await axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/recordpayment.php?${queryParams}`);
-      handleModalOpen(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/processpayment.php?paymentref=${globalRef}`)
+      let result = await axios.get(`${url.BASE_URL}recordpayment.php?${queryParams}`);
+      handleModalOpen(`${url.BASE_URL}processpayment.php?paymentref=${globalRef}`)
 
       // if (data.paymentgateway === "Bank Branch") {
       //   await fetchBankPrint(assessmentId, taxId);

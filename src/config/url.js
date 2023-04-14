@@ -5,7 +5,8 @@ const url = {
   // PAY_URL: 'http://localhost/etaxpay/',
 
   // live db
-  BASE_URL: "https://webpay.bespoque.dev/api/v1/",
+  // BASE_URL: "https://webpay.bespoque.dev/api/v1/",
+  BASE_URL: "https://irs.kg.gov.ng/quickpay-staging/",
   PAY_URL: "https://etaxwebpay.irs.kg.gov.ng/",
 };
 
