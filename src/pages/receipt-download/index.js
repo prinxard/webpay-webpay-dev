@@ -19,11 +19,10 @@ const Index = () => {
     useEffect(() => {
         if (router && router.query) {
             let paymentID = router.query?.reference || "";
-            console.log("paymentID", router.query);
             const fetchPost = () => {
                 setIsFetching(true)
                 if (paymentID.includes("FA")) {
-                    axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/getpayment.php?paymentref=${paymentID}&by=assessment`)
+                    axios.get(`${url.BASE_URL}getpayment.php?paymentref=${paymentID}&by=assessment`)
                         .then(function (response) {
                             let res = response.data.body;
                             setColData(() => response.data.body)
@@ -35,8 +34,7 @@ const Index = () => {
                             console.log(error);
                         })
                 } else {
-
-                    axios.get(`https://irs.kg.gov.ng/etaxwebpay/v3/api_v3/getpayment.php?paymentref=${paymentID}`)
+                    axios.get(`${url.BASE_URL}getpayment.php?paymentref=${paymentID}`)
                         .then(function (response) {
                             let res = response.data.body;
                             setColData(() => response.data.body)
