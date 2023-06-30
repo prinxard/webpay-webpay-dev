@@ -6,8 +6,7 @@ const url = {
 
   // live db
   // BASE_URL: "https://webpay.bespoque.dev/api/v1/",
-  BASE_URL: "https://bespoque.dev/quickpay-staging/",
-  PAY_URL: "https://etaxwebpay.irs.kg.gov.ng/",
+  BASE_URL: "https://sandbox.epay.abssin.com/",
 };
 
 export default url;
